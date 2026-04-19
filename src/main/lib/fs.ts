@@ -35,6 +35,10 @@ const WINDOWS_INVALID_CHARS_REGEX = /[<>:"/\\|?*\u0000-\u001F]/;
 // oxlint-disable-next-line no-control-regex
 const WINDOWS_INVALID_CHARS_REGEX_GLOBAL = /[<>:"/\\|?*\u0000-\u001F]/g;
 const WINDOWS_RESERVED_NAMES_REGEX = /^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(\..*)?$/i;
+// oxlint-disable-next-line no-control-regex
+const POSIX_INVALID_CHARS_REGEX = /[/\u0000]/;
+// oxlint-disable-next-line no-control-regex
+const POSIX_INVALID_CHARS_REGEX_GLOBAL = /[/\u0000]/g;
 const ONLY_DOTS_REGEX = /^\.+$/;
 const TRAILING_DOTS_REGEX = /[.]+$/;
 
@@ -180,13 +184,8 @@ export class FS {
         }
     }
 
-    public isValidWindowsFilename(name: string): boolean {
+    public isValidFilename(name: string): boolean {
         if (!name || name.length === 0 || name.length > 255) {
-            return false;
-        }
-
-        // oxlint-disable-next-line no-control-regex
-        if (WINDOWS_INVALID_CHARS_REGEX.test(name)) {
             return false;
         }
 
@@ -194,28 +193,41 @@ export class FS {
             return false;
         }
 
-        if (name.endsWith(" ") || name.endsWith(".")) {
-            return false;
+        if (process.platform === "win32") {
+            if (WINDOWS_INVALID_CHARS_REGEX.test(name)) return false;
+            if (name.endsWith(" ") || name.endsWith(".")) return false;
+            if (WINDOWS_RESERVED_NAMES_REGEX.test(name)) return false;
+            return true;
         }
 
-        if (WINDOWS_RESERVED_NAMES_REGEX.test(name)) {
-            return false;
-        }
-
+        if (POSIX_INVALID_CHARS_REGEX.test(name)) return false;
         return true;
     }
 
-    public assertValidWindowsFilename(name: string) {
-        if (!this.isValidWindowsFilename(name)) {
+    public assertValidFilename(name: string) {
+        if (!this.isValidFilename(name)) {
             throw new Error("INVALID_WINDOWS_FILENAME");
         }
     }
 
-    public sanitizeWindowsFilename(input: string, sanitizeString = " ") {
-        // oxlint-disable-next-line no-control-regex
-        let sanitized = input.replace(WINDOWS_INVALID_CHARS_REGEX_GLOBAL, sanitizeString).trim();
+    public isValidWindowsFilename(name: string): boolean {
+        return this.isValidFilename(name);
+    }
 
-        sanitized = sanitized.replace(TRAILING_DOTS_REGEX, "");
+    public assertValidWindowsFilename(name: string) {
+        this.assertValidFilename(name);
+    }
+
+    public sanitizeWindowsFilename(input: string, sanitizeString = " ") {
+        const regex =
+            process.platform === "win32"
+                ? WINDOWS_INVALID_CHARS_REGEX_GLOBAL
+                : POSIX_INVALID_CHARS_REGEX_GLOBAL;
+        let sanitized = input.replace(regex, sanitizeString).trim();
+
+        if (process.platform === "win32") {
+            sanitized = sanitized.replace(TRAILING_DOTS_REGEX, "");
+        }
 
         if (sanitized.length === 0) {
             sanitized = "Untitled";

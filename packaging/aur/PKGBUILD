@@ -5,14 +5,14 @@ pkgver=0.1.0
 pkgrel=1
 pkgdesc="Linux port of Nahida Desktop mod manager"
 arch=('x86_64')
-url="https://github.com/myparsleycat/nahida-desktop"
+url="https://github.com/Relained/nahida-desktop-linux"
 license=('custom')
 depends=('fuse2' 'hicolor-icon-theme')
 optdepends=('p7zip: archive extraction support')
 provides=("${_pkgname}")
 conflicts=("${_pkgname}")
 options=(!strip)
-source=("${_pkgname}-${pkgver}.AppImage::https://github.com/myparsleycat/nahida-desktop/releases/download/v${pkgver}/${_pkgname}-${pkgver}.AppImage"
+source=("${_pkgname}-${pkgver}.AppImage::https://github.com/Relained/nahida-desktop-linux/releases/download/v${pkgver}/${_pkgname}-${pkgver}.AppImage"
         "${_pkgname}.desktop"
         "LICENSE")
 noextract=("${_pkgname}-${pkgver}.AppImage")

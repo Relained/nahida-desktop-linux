@@ -18,13 +18,16 @@
     "build": "pnpm run db:generate && electron-vite build",
     "postinstall": "electron-builder install-app-deps",
     "clean": "rimraf dist out",
-    "build:unpack": "pnpm run clean && pnpm run build && electron-builder --dir",
-    "build:linux": "pnpm run clean && pnpm run build && electron-builder --linux"
+    "build:unpack": "pnpm run clean && pnpm run build && electron-builder --dir && pnpm run verify:asar",
+    "build:linux": "pnpm run clean && pnpm run build && electron-builder --linux && pnpm run verify:asar",
+    "build:linux:fast": "pnpm run build && electron-builder --linux && pnpm run verify:asar",
+    "verify:asar": "node scripts/verify-asar.mjs"
   },
   "dependencies": {
     "@borewit/text-codec": "^0.2.2",
     "@electron-toolkit/preload": "^3.0.2",
     "@electron-toolkit/utils": "^4.0.0",
+    "auto-launch": "^5.0.6",
     "better-sqlite3": "^12.9.0",
     "drizzle-orm": "^0.45.2",
     "electron-devtools-installer": "^4.0.0",
@@ -41,13 +44,12 @@
     "nanoid": "^5.1.7",
     "p-limit": "^7.3.0",
     "p-queue": "^9.1.2",
+    "path-browserify": "^1.0.1",
     "pino": "^10.3.1",
     "rotating-file-stream": "^3.2.9",
     "rxjs": "^7.8.2",
     "sharp": "^0.34.5",
-    "trash": "^10.1.1",
     "undici": "^7.24.6",
-    "wrappy": "^1.0.2",
     "write-file-atomic": "^7.0.1",
     "zod": "^4.3.6"
   },

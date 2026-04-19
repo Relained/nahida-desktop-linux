@@ -66,8 +66,18 @@ export function openPath(path: string) {
 }
 
 export async function trash(targetPath: string) {
-    const { default: trashFn } = await import("trash");
-    await trashFn(targetPath);
+    await new Promise<void>((resolve, reject) => {
+        const proc = spawn("gio", ["trash", "--", targetPath], { stdio: "pipe" });
+        let stderr = "";
+        proc.stderr.on("data", (chunk) => {
+            stderr += chunk.toString();
+        });
+        proc.on("error", reject);
+        proc.on("close", (code) => {
+            if (code === 0) resolve();
+            else reject(new Error(`gio trash exited with ${code}: ${stderr.trim()}`));
+        });
+    });
 }
 
 export async function mkdir(parentPath: string, name: string): Promise<string> {
