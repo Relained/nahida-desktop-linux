@@ -55,6 +55,24 @@ Yes. You can use the mod manager and tools, as well as download from the Nahida 
 ### Installation does not proceed
 Windows Defender and some antivirus programs may occasionally block the installer. Try adding the installer as an exception or temporarily disabling real-time protection, then try again.
 
+## Build from Source
+
+Requirements: Node.js 22+, pnpm 10+, Rust (stable), Linux with `libarchive-tools`.
+
+```bash
+pnpm install
+pnpm run build:native   # compile native-mod / native-fs (Rust)
+pnpm run build:linux    # produces dist/*.AppImage and dist/*.pacman
+```
+
+Install the pacman package on Arch-based distros:
+
+```bash
+sudo pacman -U dist/nahida-desktop-linux-*.pacman
+```
+
+Or run the AppImage directly after `chmod +x dist/nahida-desktop-linux-*.AppImage`.
+
 ## License
 
 Distributed under the [GNU GPLv3](LICENSE).
