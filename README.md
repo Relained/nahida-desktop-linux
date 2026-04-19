@@ -65,6 +65,8 @@ pnpm run build:native   # compile native-mod / native-fs (Rust)
 pnpm run build:linux    # produces dist/*.AppImage and dist/*.pacman
 ```
 
+For iterative rebuilds, `pnpm run build:linux:fast` skips the `clean` step so `out/` and `dist/` are reused — noticeably quicker when only app code changed.
+
 Install the pacman package on Arch-based distros:
 
 ```bash
