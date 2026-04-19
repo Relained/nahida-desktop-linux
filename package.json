@@ -18,9 +18,10 @@
     "build": "pnpm run db:generate && electron-vite build",
     "postinstall": "electron-builder install-app-deps",
     "clean": "rimraf dist out",
-    "build:unpack": "pnpm run clean && pnpm run build && electron-builder --dir && pnpm run verify:asar",
-    "build:linux": "pnpm run clean && pnpm run build && electron-builder --linux && pnpm run verify:asar",
-    "build:linux:fast": "pnpm run build && electron-builder --linux && pnpm run verify:asar",
+    "gen:icons": "node scripts/gen-icons.mjs",
+    "build:unpack": "pnpm run clean && pnpm run gen:icons && pnpm run build && electron-builder --dir && pnpm run verify:asar",
+    "build:linux": "pnpm run clean && pnpm run gen:icons && pnpm run build && electron-builder --linux && pnpm run verify:asar",
+    "build:linux:fast": "pnpm run gen:icons && pnpm run build && electron-builder --linux && pnpm run verify:asar",
     "verify:asar": "node scripts/verify-asar.mjs"
   },
   "dependencies": {

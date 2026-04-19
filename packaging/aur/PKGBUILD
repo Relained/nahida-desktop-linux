@@ -30,10 +30,14 @@ package() {
     install -Dm755 "${srcdir}/${_pkgname}-${pkgver}.AppImage" \
         "${pkgdir}/opt/${_pkgname}/${_pkgname}.AppImage"
 
+    for _size in 16 24 32 48 64 96 128 256 512; do
+        local _src="${srcdir}/squashfs-root/usr/share/icons/hicolor/${_size}x${_size}/apps/${_pkgname}.png"
+        [[ -f "${_src}" ]] || continue
+        install -Dm644 "${_src}" \
+            "${pkgdir}/usr/share/icons/hicolor/${_size}x${_size}/apps/${_pkgname}.png"
+    done
     install -Dm644 "${srcdir}/squashfs-root/usr/share/icons/hicolor/512x512/apps/${_pkgname}.png" \
-        "${pkgdir}/usr/share/icons/hicolor/512x512/apps/${_pkgname}.png" 2>/dev/null || \
-    install -Dm644 "${srcdir}/squashfs-root/${_pkgname}.png" \
-        "${pkgdir}/usr/share/icons/hicolor/512x512/apps/${_pkgname}.png" 2>/dev/null || true
+        "${pkgdir}/usr/share/pixmaps/${_pkgname}.png"
 
     install -Dm644 "${srcdir}/${_pkgname}.desktop" \
         "${pkgdir}/usr/share/applications/${_pkgname}.desktop"
