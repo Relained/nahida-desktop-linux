@@ -1,0 +1,213 @@
+import { RootProvider } from "@renderer/components/root-provider";
+import { Sidebar } from "@renderer/components/sidebar";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@renderer/components/ui/alert-dialog";
+import { Button } from "@renderer/components/ui/button";
+import { Toaster } from "@renderer/components/ui/sonner";
+import { useGlobalEvents } from "@renderer/hooks/use-global-events";
+import { useTitlebar } from "@renderer/hooks/use-titlebar";
+import { cn } from "@renderer/lib/utils";
+import { useGlobalStore } from "@renderer/store/global";
+import type { QueryClient } from "@tanstack/react-query";
+import { createRootRouteWithContext, Outlet, useLocation } from "@tanstack/react-router";
+import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
+
+function UpdateAlertDialog() {
+  const { t } = useTranslation();
+  const appStatus = useGlobalStore((state) => state.appStatus);
+  const open = useGlobalStore((state) => state.shouldPromptForUpdate);
+  const releaseVersion = useGlobalStore((state) => state.releaseVersion);
+  const releaseNotesUrl = useGlobalStore((state) => state.releaseNotesUrl);
+  const setShouldPromptForUpdate = useGlobalStore((state) => state.setShouldPromptForUpdate);
+  const isDismissingRef = useRef(false);
+  const skipNextDismissRef = useRef(false);
+  const versionRangeText =
+    appStatus?.version && releaseVersion ? ` (${appStatus.version} → ${releaseVersion})` : "";
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    if (nextOpen) {
+      setShouldPromptForUpdate(true);
+      return;
+    }
+
+    setShouldPromptForUpdate(false);
+
+    if (skipNextDismissRef.current) {
+      skipNextDismissRef.current = false;
+      return;
+    }
+
+    if (isDismissingRef.current) {
+      return;
+    }
+
+    isDismissingRef.current = true;
+    window.api.invoke("updater:dismissUpdateDialog").finally(() => {
+      isDismissingRef.current = false;
+    });
+  };
+
+  return (
+    <AlertDialog open={open} onOpenChange={handleOpenChange}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{t("updater.toast.available.title")}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {t("updater.toast.available.description", { versionRangeText })}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>{t("g.later")}</AlertDialogCancel>
+          {releaseNotesUrl && (
+            <Button
+              variant="outline"
+              onClick={() => {
+                window.api.invoke("util:openExternal", releaseNotesUrl);
+              }}
+            >
+              {t("updater.toast.available.releaseNotes")}
+            </Button>
+          )}
+          <AlertDialogAction
+            onClick={() => {
+              skipNextDismissRef.current = true;
+              setShouldPromptForUpdate(false);
+              window.api.invoke("updater:installUpdate");
+            }}
+          >
+            {t("updater.toast.available.action")}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+function RootComponent() {
+  const setAppStatus = useGlobalStore((state) => state.setAppStatus);
+  const setUpdateAvailable = useGlobalStore((state) => state.setUpdateAvailable);
+  const setUpdateDownloaded = useGlobalStore((state) => state.setUpdateDownloaded);
+  const setShouldPromptForUpdate = useGlobalStore((state) => state.setShouldPromptForUpdate);
+  const setUpdaterStatus = useGlobalStore((state) => state.setUpdaterStatus);
+  const { i18n } = useTranslation();
+  const { screenHeight, titlebarStyle } = useTitlebar();
+
+  useEffect(() => {
+    const removeStatusListener = window.api.on("updater:status-changed", (status) => {
+      setUpdaterStatus(status);
+    });
+
+    const removeUpdateAvailableListener = window.api.on("updater:update-available", () => {
+      setUpdateAvailable(true);
+    });
+
+    const removeUpdateListener = window.api.on("updater:update-downloaded", () => {
+      setUpdateAvailable(true);
+      setUpdateDownloaded(true);
+      setShouldPromptForUpdate(true);
+    });
+
+    const syncUpdaterStatus = () => {
+      window.api.invoke("updater:getStatus").then((status) => {
+        setUpdaterStatus(status);
+      });
+    };
+
+    const removeWindowFocusListener = window.api.on("window:focus", () => {
+      syncUpdaterStatus();
+    });
+
+    window.api.invoke("util:getAppStatus").then((appStatus) => {
+      setAppStatus(appStatus);
+    });
+    syncUpdaterStatus();
+    window.api.invoke("setting:general:getLanguage").then((language) => {
+      if (language) i18n.changeLanguage(language);
+    });
+
+    return () => {
+      removeStatusListener();
+      removeUpdateAvailableListener();
+      removeUpdateListener();
+      removeWindowFocusListener();
+    };
+  }, [
+    setAppStatus,
+    setUpdateAvailable,
+    setUpdateDownloaded,
+    setShouldPromptForUpdate,
+    setUpdaterStatus,
+    i18n,
+  ]);
+
+  useGlobalEvents();
+
+  const isNoSidebar = false;
+  const shouldShowUpdateDialog = !isNoSidebar;
+
+  return (
+    <>
+      {titlebarStyle === "modern" && <div className="h-7 shrink-0" />}
+
+      <Toaster position="bottom-right" richColors />
+
+      {shouldShowUpdateDialog && <UpdateAlertDialog />}
+
+      <main className={cn("flex w-screen overflow-hidden", screenHeight)}>
+        <div className="flex flex-row w-full">
+          {!isNoSidebar && <Sidebar className="border-b" />}
+
+          <div className="flex-1 min-w-0 h-full relative">
+            <Outlet />
+          </div>
+        </div>
+      </main>
+    </>
+  );
+}
+
+function NotFoundComponent() {
+  const location = useLocation();
+  const { Titlebar } = useTitlebar();
+
+  return (
+    <>
+      <Titlebar />
+      <div>Not Found here is {location.pathname}</div>
+    </>
+  );
+}
+
+function PendingComponent() {
+  const { Titlebar } = useTitlebar();
+
+  return (
+    <>
+      <Titlebar />
+      <div>Loading...</div>
+    </>
+  );
+}
+
+export const Route = createRootRouteWithContext<{
+  queryClient: QueryClient;
+}>()({
+  component: () => {
+    return (
+      <RootProvider>
+        <RootComponent />
+      </RootProvider>
+    );
+  },
+  notFoundComponent: NotFoundComponent,
+  pendingComponent: PendingComponent,
+});

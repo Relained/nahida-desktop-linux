@@ -1,0 +1,46 @@
+# Maintainer: Relained <sewon7@gmail.com>
+pkgname=nahida-desktop-linux-bin
+_pkgname=nahida-desktop-linux
+pkgver=0.1.0
+pkgrel=1
+pkgdesc="Linux port of Nahida Desktop mod manager"
+arch=('x86_64')
+url="https://github.com/myparsleycat/nahida-desktop"
+license=('custom')
+depends=('fuse2' 'hicolor-icon-theme')
+optdepends=('p7zip: archive extraction support')
+provides=("${_pkgname}")
+conflicts=("${_pkgname}")
+options=(!strip)
+source=("${_pkgname}-${pkgver}.AppImage::https://github.com/myparsleycat/nahida-desktop/releases/download/v${pkgver}/${_pkgname}-${pkgver}.AppImage"
+        "${_pkgname}.desktop"
+        "LICENSE")
+noextract=("${_pkgname}-${pkgver}.AppImage")
+sha256sums=('SKIP'
+            'SKIP'
+            'SKIP')
+
+prepare() {
+    chmod +x "${srcdir}/${_pkgname}-${pkgver}.AppImage"
+    "${srcdir}/${_pkgname}-${pkgver}.AppImage" --appimage-extract >/dev/null
+}
+
+package() {
+    install -d "${pkgdir}/opt/${_pkgname}"
+    install -Dm755 "${srcdir}/${_pkgname}-${pkgver}.AppImage" \
+        "${pkgdir}/opt/${_pkgname}/${_pkgname}.AppImage"
+
+    install -Dm644 "${srcdir}/squashfs-root/usr/share/icons/hicolor/512x512/apps/${_pkgname}.png" \
+        "${pkgdir}/usr/share/icons/hicolor/512x512/apps/${_pkgname}.png" 2>/dev/null || \
+    install -Dm644 "${srcdir}/squashfs-root/${_pkgname}.png" \
+        "${pkgdir}/usr/share/icons/hicolor/512x512/apps/${_pkgname}.png" 2>/dev/null || true
+
+    install -Dm644 "${srcdir}/${_pkgname}.desktop" \
+        "${pkgdir}/usr/share/applications/${_pkgname}.desktop"
+
+    install -Dm644 "${srcdir}/LICENSE" \
+        "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
+
+    install -d "${pkgdir}/usr/bin"
+    ln -s "/opt/${_pkgname}/${_pkgname}.AppImage" "${pkgdir}/usr/bin/${_pkgname}"
+}

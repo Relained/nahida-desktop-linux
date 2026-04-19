@@ -1,0 +1,362 @@
+{
+  "g": {
+    "search": "Search",
+    "name": "Name",
+    "date": "Date",
+    "size": "Size",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "select": "Select",
+    "apply": "Apply",
+    "delete": "Delete",
+    "add": "Add",
+    "create": "Create",
+    "unknown": "Unknown",
+    "save": "Save",
+    "close": "Close",
+    "rename": "Rename",
+    "download": "Download",
+    "later": "Later"
+  },
+  "updater": {
+    "titlebar": {
+      "action": "Click to restart and update",
+      "downloadAction": "Download update"
+    },
+    "actions": {
+      "download": "Download update",
+      "install": "Restart and update"
+    },
+    "status": {
+      "idle": "You're using the latest version.",
+      "checking": "Checking for updates...",
+      "downloading": "Downloading the update...",
+      "available": "An update is available. Download it when you're ready.{{versionRangeText}}",
+      "downloaded": "The update is ready to install."
+    },
+    "toast": {
+      "available": {
+        "title": "A new version is available.",
+        "description": "A new version of Nahida Desktop is available. Restart to update.{{versionRangeText}}",
+        "action": "Update",
+        "releaseNotes": "Open patch notes"
+      },
+      "notAvailable": {
+        "title": "You're up to date.",
+        "description": "There are no updates available right now."
+      }
+    }
+  },
+  "page": {
+    "mod": {
+      "title": "Mod Manager",
+      "dad_section": {
+        "title": "Add to {{name}}",
+        "description": "Compressed files will be automatically extracted"
+      },
+      "all_enabled": "Enable all",
+      "all_disabled": "Disable all",
+      "content-header": {
+        "all_enabled": "All mods enabled",
+        "all_disabled": "All mods disabled",
+        "download_dialog": {
+          "title": "Download from URL",
+          "description": "Download the archive to the selected character folder and extract it automatically.",
+          "url_label": "Download URL",
+          "url_placeholder": "Enter a direct download URL",
+          "target_label": "Target folder",
+          "no_target": "Select a character folder on the left",
+          "invalid_url": "Enter a valid URL.",
+          "started": "Download started."
+        }
+      },
+      "character-sidebar": {
+        "add-to-character": "Add to {{name}}",
+        "open-in-explorer": "Open in File Explorer",
+        "create-folder": "Create New Folder",
+        "delete-folder": "Delete Folder",
+        "collapse-subgroups": "Collapse subgroups",
+        "expand-subgroups": "Expand subgroups",
+        "unpersist-subgroups": "Unpersist subgroups",
+        "persist-subgroups": "Persist subgroups"
+      },
+      "dialog": {
+        "extract_archive_path": {
+          "title": "Choose extraction path",
+          "description": "Choose the extracted folder structure when {{fileName}} contains a single top-level folder.",
+          "cancel": "Cancel",
+          "flatten_single_root": "Remove top-level folder",
+          "flatten_single_root_example": "Example: mod.zip/a/b/mod.ini -> b/mod.ini",
+          "keep_archive_root": "Keep archive paths",
+          "keep_archive_root_example": "Example: mod.zip/a/b/mod.ini -> a/b/mod.ini"
+        },
+        "add-game": {
+          "title": "Add Game",
+          "name_input_placeholder": "Game Name (e.g. Genshin)",
+          "path_input_placeholder": "Mod folder path",
+          "#": {
+            "0": "Please enter a game name",
+            "1": "Please select a mod folder path"
+          }
+        },
+        "edit-game": {
+          "title": "Edit Game",
+          "path_label": "Mod folder path",
+          "importer_label": "Importer",
+          "no_importer": "None"
+        },
+        "preset-management": {
+          "legacy-badge": "Legacy",
+          "legacy-description": "This preset uses the old format and cannot be applied. Delete and recreate it."
+        },
+        "delete-game": {
+          "title": "Delete Game",
+          "description": "Are you sure you want to delete '{{name}}'? This action cannot be undone, and the game's presets will also be deleted."
+        },
+        "delete-mod": {
+          "title": "Are you sure you want to delete this mod?",
+          "description": "Deleted mods can be restored from the recycle bin."
+        },
+        "rename-mod": {
+          "title": "Rename Mod",
+          "description": "Change the folder name used for this mod.",
+          "name-placeholder": "Mod name",
+          "confirm": "Rename"
+        },
+        "create-folder": {
+          "title": "Create New Folder",
+          "description": "Create a new folder under {{name}}.",
+          "name-placeholder": "Folder name",
+          "#": {
+            "success": "\"{{name}}\" folder created",
+            "invalid-name": "The folder name is invalid",
+            "already-exists": "A folder with that name already exists",
+            "failed": "Failed to create folder"
+          }
+        },
+        "delete-folder": {
+          "title": "Delete Folder",
+          "description": "Are you sure you want to delete \"{{name}}\"? The folder can be restored from the recycle bin.",
+          "#": {
+            "success": "Folder moved to trash",
+            "failed": "Failed to delete folder"
+          }
+        },
+        "delete-preview": {
+          "title": "Delete Preview",
+          "description": "Are you sure you want to delete the preview for \"{{name}}\"? It can be restored from the recycle bin."
+        },
+        "overwrite-preview": {
+          "title": "Overwrite Existing Preview?",
+          "description": "\"{{name}}\" already has a preview. Continue to replace it with the new image.",
+          "confirm": "Overwrite"
+        },
+        "add-preset": {
+          "title": "Create New Preset",
+          "name-placeholder": "Preset name",
+          "description-placeholder": "Description (optional)",
+          "conflict": {
+            "title": "Duplicate mod entries found",
+            "description": "These folders are treated as the same mod because the DISABLED prefix is ignored. Continue to rename the disabled duplicates and create the preset.",
+            "mod-key-label": "Conflict key",
+            "enabled": "Enabled",
+            "disabled": "Disabled",
+            "action": "Rename disabled duplicates and continue"
+          },
+          "#": {
+            "0": "Please enter a preset name"
+          }
+        }
+      },
+      "hooks": {
+        "use-mod-mutations": {
+          "add-game-mutation": {
+            "success": "Game added",
+            "duplicate-game-name": "A game with that name already exists",
+            "duplicate-mod-folder-path": "That mod folder path is already in use",
+            "invalid-params": "Game name and mod folder path are required",
+            "failed": "Failed to add game"
+          },
+          "delete-game-mutation": {
+            "success": "Game deleted"
+          },
+          "update-game-mutation": {
+            "success": "Game settings saved"
+          },
+          "toggle-mutation": {
+            "0": "The {{name}} folder already exists",
+            "1": "{{processes}} is using the folder, so it cannot be modified",
+            "2": "Failed to change mod status",
+            "1-fallback": "The folder is locked and cannot be modified"
+          },
+          "rename-mutation": {
+            "0": "The {{name}} folder already exists",
+            "1": "The folder {{processes}} is using the folder, so it cannot be renamed",
+            "2": "Please enter a valid mod name",
+            "3": "Failed to rename mod",
+            "1-fallback": "The folder is locked and cannot be renamed"
+          },
+          "locked-description": "Used by: {{processes}}",
+          "create-preset-mutation": {
+            "success": "Preset created",
+            "duplicate-name": "A preset with that name already exists",
+            "conflict-resolve-failed": "Some duplicate mod folders could not be resolved automatically"
+          },
+          "apply-preset-mutation": {
+            "legacy": "Legacy presets cannot be applied. Delete and recreate the preset.",
+            "success": "Preset applied",
+            "missing": "Preset applied, but {{count}} mods were missing"
+          },
+          "delete-preset-mutation": {
+            "success": "Preset deleted"
+          }
+        }
+      },
+      "empty_selection": "Please select a group or character folder from the sidebar.",
+      "no-preview": "No Preview",
+      "context-menu": {
+        "paste-preview": "Paste",
+        "open-preview-viewer": "Open in viewer",
+        "delete-preview": "Delete preview",
+        "open-cmd": "Open CMD",
+        "open-folder": "Open folder",
+        "rename": "Rename"
+      },
+      "toast": {
+        "trash-loading": "Moving to recycle bin...",
+        "trash-success": "Deleted successfully",
+        "trash-error": "Failed to delete",
+        "value-required": "Please enter a value.",
+        "rename-success": "Mod renamed successfully",
+        "paste-preview": {
+          "copying": "Copying preview...",
+          "success": "Preview updated",
+          "copy-error": "Failed to copy preview",
+          "downloading": "Downloading preview...",
+          "download-error": "Failed to download preview",
+          "saving": "Saving preview...",
+          "save-error": "Failed to save preview",
+          "no-image": "No image, image URL, or image file found in the clipboard.",
+          "clipboard-error": "Failed to read the clipboard."
+        }
+      },
+      "log-dialog": {
+        "title": "Log",
+        "running": "Running..."
+      }
+    },
+    "setting": {
+      "title": "Settings",
+      "tabs": {
+        "general": "General",
+        "transfer": "Transfer",
+        "mod": "Mod",
+        "account": "Account",
+        "advanced": "Advanced"
+      },
+      "gen": {
+        "application": {
+          "title": "Application",
+          "runOnStartup": "Run on startup",
+          "runOnStartupDescription": "Automatically launch the app when the system starts.",
+          "checkUpdate": "Check for updates",
+          "runInBackground": "Run in background",
+          "runInBackgroundDescription": "Keep running in the background when all windows are closed.",
+          "runInBackgroundDisableConfirmTitle": "Disable background run?",
+          "runInBackgroundDisableConfirmDescription": "Toggle Persist and Toggle Viewer work more reliably when background run is enabled. If you turn this off, closing all windows will quit the app, and you will not be able to use those features until the app is open again. Do you still want to turn off background run?",
+          "runInBackgroundDisableConfirmAction": "Turn off anyway",
+          "autoUpdate": "Auto update",
+          "updateStatus": "Update status",
+          "autoUpdateModes": {
+            "auto": {
+              "title": "Automatic update",
+              "description": "Check for updates on startup and every hour, then download them automatically."
+            },
+            "notify": {
+              "title": "Update notifications",
+              "description": "Check for updates automatically, but only download them when you choose to."
+            },
+            "off": {
+              "title": "Disabled",
+              "description": "Do not check for or download updates automatically."
+            }
+          }
+        },
+        "language": {
+          "title": "Language",
+          "select": "Select language"
+        },
+        "theme": {
+          "title": "Theme",
+          "select": "Select theme",
+          "light": "Light",
+          "dark": "Dark",
+          "system": "System default"
+        },
+        "startPage": {
+          "title": "Start Page",
+          "select": "Select start page"
+        },
+        "titlebarStyle": {
+          "title": "Titlebar Style",
+          "select": "Select Style",
+          "modern": "Modern (Custom)",
+          "native": "Native (Default)"
+        },
+        "logLevel": {
+          "title": "Log Level",
+          "select": "Select Level"
+        },
+        "other": {
+          "title": "Other",
+          "moveTransferPageWhenStartTransfer": "Go to transfer page on start",
+          "moveTransferPageWhenStartTransferDescription": "Automatically move to the transfer management page when a file transfer starts.",
+          "powerSaveBlockInTransfer": "Prevent sleep mode",
+          "powerSaveBlockInTransferDescription": "Prevent the system from entering sleep mode while transfer or sync is in progress.",
+          "imageCacheTitle": "Image Cache",
+          "imageCacheDescription": "Clears the preview image cache",
+          "imageCacheClear": "Clear Cache"
+        }
+      },
+      "mod": {
+        "title": "Mod",
+        "mod_management": {
+          "title": "Mod Management",
+          "archiveExtractPathMode": "Archive extraction path",
+          "archiveExtractPathModeDescription": "Choose how archives with a single top-level folder should be extracted.",
+          "archiveExtractPathModes": {
+            "flatten_single_root": "Remove top-level folder",
+            "keep_archive_root": "Keep archive paths",
+            "ask_every_time": "Ask every time"
+          },
+          "deleteArchiveAfterExtract": "Delete archive after extraction",
+          "deleteArchiveAfterExtractDescription": "Delete the original archive file after extracting it to the mod folder",
+          "moveFolderInsteadOfCopy": "Move folder instead of copy",
+          "moveFolderInsteadOfCopyDescription": "Move instead of copy when dropping a folder into the mod folder (deletes original)",
+          "copyShaderFixesOnEnable": "Copy ShaderFixes on enable",
+          "copyShaderFixesOnEnableDescription": "Copy ShaderFixes files from the mod into the active Importer's ShaderFixes folder when enabling a mod.",
+          "searchModPreview": "Search Preview in Subfolders",
+          "searchModPreviewDescription": "If no preview image exists in the character folder, search for preview images inside mod folders."
+        },
+        "performance": {
+          "title": "Performance",
+          "backdrop-blur": {
+            "title": "Use Blur",
+            "description": "Disable this option if performance issues occur while exploring mods"
+          },
+          "virtualization": {
+            "title": "Use Virtualization",
+            "description": "Virtualizes the mod list to improve performance",
+            "threshold": "Threshold Mod Count",
+            "thresholdDescription": "Applies virtualization when the number of mods exceeds the set count"
+          }
+        }
+      },
+      "adv": {
+        "title": "Advanced",
+        "warning_title": "Caution",
+        "warning_description": "Changing settings here may affect app behavior."
+      }
+    }
+  }
+}

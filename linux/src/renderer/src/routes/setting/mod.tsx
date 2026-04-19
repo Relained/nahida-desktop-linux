@@ -1,0 +1,267 @@
+import { Card, CardContent, CardHeader, CardTitle } from "@renderer/components/ui/card";
+import { Input } from "@renderer/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@renderer/components/ui/select";
+import { Separator } from "@renderer/components/ui/separator";
+import { Switch } from "@renderer/components/ui/switch";
+import { useSettings } from "@renderer/hooks/use-settings";
+import { Logger } from "@renderer/lib/logger";
+import type { ArchiveExtractPathMode } from "@shared/mod";
+import { useQueryClient } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
+
+export const Route = createFileRoute("/setting/mod")({
+  component: RouteComponent,
+});
+
+const settingsConfig = {
+  archiveExtractPathMode: "setting:mod:getArchiveExtractPathMode",
+  deleteArchiveAfterExtract: "setting:mod:getDeleteArchiveAfterExtract",
+  moveFolderInsteadOfCopy: "setting:mod:getMoveFolderInsteadOfCopy",
+  virtualizationEnabled: "setting:mod:getVirtualizationEnabled",
+  virtualizationThreshold: "setting:mod:getVirtualizationThreshold",
+  searchModPreview: "setting:mod:getSearchModPreview",
+  copyShaderFixesOnEnable: "setting:mod:getCopyShaderFixesOnEnable",
+} as const;
+
+function RouteComponent() {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+  const { settings, update, setSettings, isLoading } = useSettings<{
+    archiveExtractPathMode: ArchiveExtractPathMode;
+    deleteArchiveAfterExtract: boolean;
+    moveFolderInsteadOfCopy: boolean;
+    virtualizationEnabled: boolean;
+    virtualizationThreshold: number;
+    searchModPreview: boolean;
+    copyShaderFixesOnEnable: boolean;
+  }>(settingsConfig);
+
+  if (isLoading) {
+    return null;
+  }
+
+  const handleVirtualizationEnabledChange = async (checked: boolean) => {
+    try {
+      await update("virtualizationEnabled", checked, "setting:mod:setVirtualizationEnabled");
+      queryClient.invalidateQueries({ queryKey: ["settings", "mod", "virtualization"] });
+    } catch (error) {
+      Logger.error(error, "ModSettings:handleVirtualizationEnabledChange");
+      toast.error("설정 저장에 실패했습니다.");
+    }
+  };
+
+  const handleVirtualizationThresholdChange = async (value: number) => {
+    if (value < 10) {
+      toast.warning("기준 모드 개수는 10개 이상이어야 합니다.");
+      return;
+    }
+
+    try {
+      await update("virtualizationThreshold", value, "setting:mod:setVirtualizationThreshold");
+      toast.success("설정이 저장되었습니다.");
+      queryClient.invalidateQueries({ queryKey: ["settings", "mod", "virtualization"] });
+    } catch (error) {
+      Logger.error(error, "ModSettings:handleVirtualizationThresholdChange");
+      toast.error("설정 저장에 실패했습니다.");
+    }
+  };
+
+  return (
+    <div className="space-y-6 p-4">
+      <div className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-medium">
+              {t("page.setting.mod.mod_management.title")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col space-y-4">
+            <div className="flex items-center justify-between space-x-2">
+              <div className="space-y-0.5">
+                <span className="text-sm font-medium">
+                  {t("page.setting.mod.mod_management.archiveExtractPathMode")}
+                </span>
+                <p className="text-xs text-muted-foreground">
+                  {t("page.setting.mod.mod_management.archiveExtractPathModeDescription")}
+                </p>
+              </div>
+              <Select
+                value={settings.archiveExtractPathMode}
+                onValueChange={(value: ArchiveExtractPathMode) =>
+                  update("archiveExtractPathMode", value, "setting:mod:setArchiveExtractPathMode")
+                }
+              >
+                <SelectTrigger className="w-55">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent position="popper">
+                  <SelectGroup>
+                    <SelectItem value="flatten_single_root">
+                      {t(
+                        "page.setting.mod.mod_management.archiveExtractPathModes.flatten_single_root",
+                      )}
+                    </SelectItem>
+                    <SelectItem value="keep_archive_root">
+                      {t(
+                        "page.setting.mod.mod_management.archiveExtractPathModes.keep_archive_root",
+                      )}
+                    </SelectItem>
+                    <SelectItem value="ask_every_time">
+                      {t("page.setting.mod.mod_management.archiveExtractPathModes.ask_every_time")}
+                    </SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Separator />
+
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <span className="text-sm font-medium">
+                  {t("page.setting.mod.mod_management.deleteArchiveAfterExtract")}
+                </span>
+                <p className="text-xs text-muted-foreground">
+                  {t("page.setting.mod.mod_management.deleteArchiveAfterExtractDescription")}
+                </p>
+              </div>
+              <Switch
+                checked={settings.deleteArchiveAfterExtract}
+                onCheckedChange={(val) =>
+                  update(
+                    "deleteArchiveAfterExtract",
+                    val,
+                    "setting:mod:setDeleteArchiveAfterExtract",
+                  )
+                }
+              />
+            </div>
+
+            <Separator />
+
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <span className="text-sm font-medium">
+                  {t("page.setting.mod.mod_management.moveFolderInsteadOfCopy")}
+                </span>
+                <p className="text-xs text-muted-foreground">
+                  {t("page.setting.mod.mod_management.moveFolderInsteadOfCopyDescription")}
+                </p>
+              </div>
+              <Switch
+                checked={settings.moveFolderInsteadOfCopy}
+                onCheckedChange={(val) =>
+                  update("moveFolderInsteadOfCopy", val, "setting:mod:setMoveFolderInsteadOfCopy")
+                }
+              />
+            </div>
+
+            <Separator />
+
+            <div className="flex items-center justify-between space-x-4">
+              <div className="space-y-0.5">
+                <span className="text-sm font-medium">
+                  {t("page.setting.mod.mod_management.copyShaderFixesOnEnable")}
+                </span>
+                <p className="text-xs text-muted-foreground">
+                  {t("page.setting.mod.mod_management.copyShaderFixesOnEnableDescription")}
+                </p>
+              </div>
+              <Switch
+                checked={settings.copyShaderFixesOnEnable}
+                onCheckedChange={(val) =>
+                  update("copyShaderFixesOnEnable", val, "setting:mod:setCopyShaderFixesOnEnable")
+                }
+              />
+            </div>
+
+            <Separator />
+
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <span className="text-sm font-medium">
+                  {t("page.setting.mod.mod_management.searchModPreview")}
+                </span>
+                <p className="text-xs text-muted-foreground">
+                  {t("page.setting.mod.mod_management.searchModPreviewDescription")}
+                </p>
+              </div>
+              <Switch
+                checked={settings.searchModPreview}
+                onCheckedChange={(val) =>
+                  update("searchModPreview", val, "setting:mod:setSearchModPreview")
+                }
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-medium">
+              {t("page.setting.mod.performance.title")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col space-y-2">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <span className="text-sm font-bold">
+                    {t("page.setting.mod.performance.virtualization.title")}
+                  </span>
+                  <p className="text-xs text-muted-foreground">
+                    {t("page.setting.mod.performance.virtualization.description")}
+                  </p>
+                </div>
+                <Switch
+                  checked={settings.virtualizationEnabled}
+                  onCheckedChange={handleVirtualizationEnabledChange}
+                />
+              </div>
+
+              {settings.virtualizationEnabled && (
+                <div className="flex items-center justify-between">
+                  <div className="space-y-0.5">
+                    <span className="text-sm font-bold">
+                      {t("page.setting.mod.performance.virtualization.threshold")}
+                    </span>
+                    <p className="text-xs text-muted-foreground">
+                      {t("page.setting.mod.performance.virtualization.thresholdDescription")}
+                    </p>
+                  </div>
+
+                  <Input
+                    value={settings.virtualizationThreshold}
+                    onChange={(e) =>
+                      setSettings((prev) => ({
+                        ...prev,
+                        virtualizationThreshold: Number(e.target.value),
+                      }))
+                    }
+                    onBlur={(e) => handleVirtualizationThresholdChange(Number(e.target.value))}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.currentTarget.blur();
+                      }
+                    }}
+                    className="w-20"
+                    disabled={!settings.virtualizationEnabled}
+                  />
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

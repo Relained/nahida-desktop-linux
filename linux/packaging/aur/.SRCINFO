@@ -1,0 +1,22 @@
+pkgbase = nahida-desktop-linux-bin
+	pkgdesc = Linux port of Nahida Desktop mod manager
+	pkgver = 0.1.0
+	pkgrel = 1
+	url = https://github.com/myparsleycat/nahida-desktop
+	arch = x86_64
+	license = custom
+	depends = fuse2
+	depends = hicolor-icon-theme
+	optdepends = p7zip: archive extraction support
+	provides = nahida-desktop-linux
+	conflicts = nahida-desktop-linux
+	noextract = nahida-desktop-linux-0.1.0.AppImage
+	options = !strip
+	source = nahida-desktop-linux-0.1.0.AppImage::https://github.com/myparsleycat/nahida-desktop/releases/download/v0.1.0/nahida-desktop-linux-0.1.0.AppImage
+	source = nahida-desktop-linux.desktop
+	source = LICENSE
+	sha256sums = SKIP
+	sha256sums = SKIP
+	sha256sums = SKIP
+
+pkgname = nahida-desktop-linux-bin

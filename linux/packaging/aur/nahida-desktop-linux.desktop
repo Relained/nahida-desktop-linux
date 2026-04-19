@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Nahida Desktop Linux
+Comment=Mod manager for Nahida Desktop (Linux port)
+Exec=/opt/nahida-desktop-linux/nahida-desktop-linux.AppImage %U
+Icon=nahida-desktop-linux
+Terminal=false
+Type=Application
+Categories=Utility;
+StartupWMClass=Nahida Desktop Linux
