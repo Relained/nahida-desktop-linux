@@ -1,5 +1,6 @@
 import { spawn } from "node:child_process";
 import fsp from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import isDev from "@main/internal/isDev";
 import type { AppStatus, PathMetadata } from "@shared/types.gen";
@@ -65,19 +66,72 @@ export function openPath(path: string) {
     shell.openPath(path);
 }
 
-export async function trash(targetPath: string) {
-    await new Promise<void>((resolve, reject) => {
-        const proc = spawn("gio", ["trash", "--", targetPath], { stdio: "pipe" });
+async function tryGioTrash(target: string): Promise<{ ok: boolean; stderr: string }> {
+    return new Promise((resolve) => {
+        const proc = spawn("gio", ["trash", "--", target], { stdio: "pipe" });
         let stderr = "";
-        proc.stderr.on("data", (chunk) => {
-            stderr += chunk.toString();
+        proc.stderr.on("data", (c) => {
+            stderr += c.toString();
         });
-        proc.on("error", reject);
-        proc.on("close", (code) => {
-            if (code === 0) resolve();
-            else reject(new Error(`gio trash exited with ${code}: ${stderr.trim()}`));
-        });
+        proc.on("error", (err) => resolve({ ok: false, stderr: err.message }));
+        proc.on("close", (code) => resolve({ ok: code === 0, stderr: stderr.trim() }));
     });
+}
+
+async function findMount(abs: string): Promise<string> {
+    const mounts = (await fsp.readFile("/proc/mounts", "utf8"))
+        .split("\n")
+        .map((line) => line.split(" ")[1])
+        .filter(Boolean)
+        .sort((a, b) => b.length - a.length);
+    for (const m of mounts) {
+        const prefix = m.endsWith("/") ? m : `${m}/`;
+        if (abs === m || abs.startsWith(prefix)) return m;
+    }
+    return "/";
+}
+
+async function xdgTrashFallback(target: string): Promise<void> {
+    const abs = path.resolve(target);
+    const mount = await findMount(abs);
+    const uid = os.userInfo().uid;
+    const trashRoot = path.join(mount, `.Trash-${uid}`);
+    const filesDir = path.join(trashRoot, "files");
+    const infoDir = path.join(trashRoot, "info");
+    await fsp.mkdir(filesDir, { recursive: true, mode: 0o700 });
+    await fsp.mkdir(infoDir, { recursive: true, mode: 0o700 });
+
+    const baseName = path.basename(abs);
+    let destName = baseName;
+    let i = 1;
+    while (true) {
+        try {
+            await fsp.access(path.join(filesDir, destName));
+            destName = `${baseName}.${i++}`;
+        } catch {
+            break;
+        }
+    }
+
+    const relPath = path.relative(mount, abs);
+    const encodedPath = encodeURI(relPath).replace(/#/g, "%23");
+    const deletionDate = new Date().toISOString().replace(/\.\d+Z$/, "");
+    const info = `[Trash Info]\nPath=${encodedPath}\nDeletionDate=${deletionDate}\n`;
+    await fsp.writeFile(path.join(infoDir, `${destName}.trashinfo`), info);
+    await fsp.rename(abs, path.join(filesDir, destName));
+}
+
+export async function trash(targetPath: string) {
+    const gio = await tryGioTrash(targetPath);
+    if (gio.ok) return;
+    try {
+        await xdgTrashFallback(targetPath);
+    } catch (fallbackErr) {
+        const detail = fallbackErr instanceof Error ? fallbackErr.message : String(fallbackErr);
+        throw new Error(
+            `Failed to move item to trash. gio: ${gio.stderr || "unknown"}. fallback: ${detail}`,
+        );
+    }
 }
 
 export async function mkdir(parentPath: string, name: string): Promise<string> {
