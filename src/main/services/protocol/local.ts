@@ -19,14 +19,17 @@ export class LocalProtocol {
     public handle = async (request: Request) => {
         const url = new URL(request.url);
 
-        let fullPath = decodeURIComponent(url.pathname);
+        const pathname = decodeURIComponent(url.pathname);
+        const host = url.host ? decodeURIComponent(url.host) : "";
 
-        if (url.host) {
-            fullPath = `${url.host}:${fullPath}`;
-        }
-
-        if (fullPath.startsWith("/")) {
-            fullPath = fullPath.slice(1);
+        let fullPath: string;
+        if (process.platform === "win32") {
+            fullPath = host ? `${host}:${pathname}` : pathname;
+            if (fullPath.startsWith("/")) {
+                fullPath = fullPath.slice(1);
+            }
+        } else {
+            fullPath = host ? `/${host}${pathname}` : pathname;
         }
 
         const buffer = await fse.readFile(fullPath);

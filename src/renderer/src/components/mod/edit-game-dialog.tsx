@@ -133,7 +133,7 @@ export function EditGameDialog({
               <Input
                 placeholder={t("page.mod.dialog.add-game.path_input_placeholder")}
                 value={editGamePath}
-                readOnly
+                onChange={(e) => setEditGamePath(e.target.value)}
               />
               <Button variant="outline" size="icon" onClick={handlePickFolder}>
                 <FolderOpen className="size-4" />

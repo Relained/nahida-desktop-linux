@@ -333,105 +333,124 @@ pub struct ProcessInfo {
 }
 
 #[napi]
-#[cfg(windows)]
+#[cfg(target_os = "linux")]
 pub async fn get_locking_processes(path: String) -> napi::Result<Vec<ProcessInfo>> {
-  use std::os::windows::ffi::OsStrExt;
-  use windows::core::PCWSTR;
-  use windows::Win32::System::RestartManager::{
-    RmStartSession, RmRegisterResources, RmGetList, RmEndSession, RM_PROCESS_INFO
-  };
+  use std::collections::{HashMap, HashSet};
+  use std::path::PathBuf;
 
   napi::tokio::task::spawn_blocking(move || {
-    let normalized_path = path.replace('/', "\\");
-    let target = std::path::Path::new(&normalized_path);
+    let target = std::path::Path::new(&path);
+    let target_canon = match target.canonicalize() {
+      Ok(p) => p,
+      Err(_) => return Ok::<Vec<ProcessInfo>, napi::Error>(vec![]),
+    };
 
-    let file_paths: Vec<String> = if target.is_dir() {
-      WalkDir::new(target)
+    let mut targets: HashSet<PathBuf> = HashSet::new();
+    if target_canon.is_dir() {
+      for entry in WalkDir::new(&target_canon)
         .into_iter()
         .filter_map(|e| e.ok())
         .filter(|e| e.file_type().is_file())
-        .filter_map(|e| e.path().to_str().map(|s| s.to_string()))
-        .collect()
+      {
+        if let Ok(p) = entry.path().canonicalize() {
+          targets.insert(p);
+        }
+      }
+      // Directory itself (a process may have cwd/mmap referencing it)
+      targets.insert(target_canon.clone());
     } else {
-      vec![normalized_path.clone()]
-    };
+      targets.insert(target_canon.clone());
+    }
 
-    if file_paths.is_empty() {
+    if targets.is_empty() {
       return Ok(vec![]);
     }
 
-    let mut session_handle: u32 = 0;
-    let mut session_key = [0u16; 33];
+    let mut found: HashMap<u32, String> = HashMap::new();
 
-    unsafe {
-      let result = RmStartSession(&mut session_handle, Some(0), windows::core::PWSTR(session_key.as_mut_ptr()));
-      if result.is_err() {
-        return Ok(vec![]);
-      }
+    let processes = match procfs::process::all_processes() {
+      Ok(p) => p,
+      Err(_) => return Ok(vec![]),
+    };
 
-      let wide_paths: Vec<Vec<u16>> = file_paths
-        .iter()
-        .map(|p| {
-          std::ffi::OsStr::new(p)
-            .encode_wide()
-            .chain(std::iter::once(0))
-            .collect()
-        })
-        .collect();
-      let pcwstrs: Vec<PCWSTR> = wide_paths.iter().map(|w| PCWSTR(w.as_ptr())).collect();
-
-      let res = RmRegisterResources(session_handle, Some(&pcwstrs), None, None);
-      if res.is_err() {
-        let _ = RmEndSession(session_handle);
-        return Ok(vec![]);
-      }
-
-      let mut n_proc_info_needed: u32 = 0;
-      let mut n_proc_info: u32 = 0;
-      let mut reason: u32 = 0;
-
-      let _ = RmGetList(
-        session_handle,
-        &mut n_proc_info_needed,
-        &mut n_proc_info,
-        None,
-        &mut reason,
-      );
-
-      if n_proc_info_needed == 0 {
-        let _ = RmEndSession(session_handle);
-        return Ok(vec![]);
-      }
-
-      let mut proc_info: Vec<RM_PROCESS_INFO> = vec![std::mem::zeroed(); n_proc_info_needed as usize];
-      n_proc_info = n_proc_info_needed;
-
-      let res2 = RmGetList(
-        session_handle,
-        &mut n_proc_info_needed,
-        &mut n_proc_info,
-        Some(proc_info.as_mut_ptr()),
-        &mut reason,
-      );
-
-      let results = if res2.is_ok() {
-        (0..n_proc_info)
-          .map(|i| {
-            let info = &proc_info[i as usize];
-            let name = String::from_utf16_lossy(&info.strAppName)
-              .trim_end_matches('\0')
-              .to_string();
-            ProcessInfo { name, pid: info.Process.dwProcessId }
-          })
-          .collect()
-      } else {
-        vec![]
+    for proc_result in processes {
+      let proc = match proc_result {
+        Ok(p) => p,
+        Err(_) => continue,
       };
 
-      let _ = RmEndSession(session_handle);
-      Ok(results)
+      let pid = proc.pid() as u32;
+
+      // open file descriptors
+      if let Ok(fds) = proc.fd() {
+        for fd in fds.flatten() {
+          if let procfs::process::FDTarget::Path(fd_path) = fd.target {
+            if targets.contains(&fd_path) {
+              record_process(&mut found, &proc, pid);
+              break;
+            }
+          }
+        }
+      }
+
+      if found.contains_key(&pid) {
+        continue;
+      }
+
+      // memory maps (for loaded libs / mmap'd files)
+      if let Ok(maps) = proc.maps() {
+        for mmap in maps {
+          if let procfs::process::MMapPath::Path(mmap_path) = mmap.pathname {
+            if targets.contains(&mmap_path) {
+              record_process(&mut found, &proc, pid);
+              break;
+            }
+          }
+        }
+      }
+
+      if found.contains_key(&pid) {
+        continue;
+      }
+
+      // cwd
+      if let Ok(cwd) = proc.cwd() {
+        if targets.contains(&cwd) {
+          record_process(&mut found, &proc, pid);
+        }
+      }
     }
+
+    Ok(
+      found
+        .into_iter()
+        .map(|(pid, name)| ProcessInfo { name, pid })
+        .collect(),
+    )
   })
   .await
   .map_err(|e| napi::Error::new(napi::Status::GenericFailure, format!("Task join failed: {}", e)))?
+}
+
+#[cfg(target_os = "linux")]
+fn record_process(
+  found: &mut std::collections::HashMap<u32, String>,
+  proc: &procfs::process::Process,
+  pid: u32,
+) {
+  if found.contains_key(&pid) {
+    return;
+  }
+  let name = proc
+    .stat()
+    .ok()
+    .map(|s| s.comm)
+    .or_else(|| {
+      proc
+        .exe()
+        .ok()
+        .and_then(|p| p.file_name().map(|n| n.to_string_lossy().into_owned()))
+    })
+    .unwrap_or_default();
+  found.insert(pid, name);
 }

@@ -1,4 +1,3 @@
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Card, CardContent, CardHeader, CardTitle } from "@renderer/components/ui/card";
 import { Input } from "@renderer/components/ui/input";
 import {
@@ -11,7 +10,6 @@ import {
 } from "@renderer/components/ui/select";
 import { Separator } from "@renderer/components/ui/separator";
 import { Switch } from "@renderer/components/ui/switch";
-import { WindowsOnlyRoute } from "@renderer/components/windows-only-route";
 import { useSettings } from "@renderer/hooks/use-settings";
 import { Logger } from "@renderer/lib/logger";
 import type { ArchiveExtractPathMode } from "@shared/mod";
@@ -35,18 +33,8 @@ const settingsConfig = {
 } as const;
 
 function RouteComponent() {
-  return (
-    <WindowsOnlyRoute fallbackTo="/setting/gen">
-      <ModSettingsRouteContent />
-    </WindowsOnlyRoute>
-  );
-}
-
-function ModSettingsRouteContent() {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const [anim1] = useAutoAnimate({ duration: 150 });
-
   const { settings, update, setSettings, isLoading } = useSettings<{
     archiveExtractPathMode: ArchiveExtractPathMode;
     deleteArchiveAfterExtract: boolean;
@@ -223,7 +211,7 @@ function ModSettingsRouteContent() {
               {t("page.setting.mod.performance.title")}
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex flex-col space-y-2" ref={anim1}>
+          <CardContent className="flex flex-col space-y-2">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">

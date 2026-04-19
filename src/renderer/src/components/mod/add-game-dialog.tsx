@@ -71,7 +71,7 @@ export function AddGameDialog({ onPickFolder, onAddGame }: AddGameDialogProps) {
             <Input
               placeholder={t("page.mod.dialog.add-game.path_input_placeholder")}
               value={newGamePath}
-              readOnly
+              onChange={(e) => setNewGamePath(e.target.value)}
             />
             <Button variant="outline" size="icon" onClick={handlePickFolder}>
               <FolderOpen className="size-4" />

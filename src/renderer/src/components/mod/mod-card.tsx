@@ -19,16 +19,6 @@ interface ModCardProps {
   onToggle: (mod: ModInfo, event?: React.MouseEvent) => void;
   isIniListExpanded: boolean;
   onIniListExpandedChange: (modPath: string, isExpanded: boolean) => void;
-  fixTools: {
-    id: string;
-    name: string;
-    type: string;
-    size: number;
-  }[];
-  presets: {
-    id: string;
-    name: string;
-  }[];
   onToggleKeyUpdate: (
     modPath: string,
     iniPath: string,
@@ -44,8 +34,6 @@ export const ModCard = memo(function ModCard({
   onToggle,
   isIniListExpanded,
   onIniListExpandedChange,
-  fixTools,
-  presets,
   onToggleKeyUpdate,
 }: ModCardProps) {
   const { queryClient } = useRouteContext({ from: "__root__" });
@@ -57,8 +45,6 @@ export const ModCard = memo(function ModCard({
     <ModContextMenu
       mod={mod}
       selectedGroupPath={selectedGroupPath}
-      fixTools={fixTools}
-      presets={presets}
       onPaste={handlePaste}
     >
       <div

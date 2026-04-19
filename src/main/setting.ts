@@ -31,17 +31,13 @@ function clampTransferConcurrency(value: number, min: number, max: number, fallb
     return Math.min(max, Math.max(min, Math.trunc(value)));
 }
 
-function getDefaultStartPageForPlatform(platform: NodeJS.Platform) {
-    return supportsWindowsDesktopFeatures(platform) ? "/mod" : "/transfer";
+function getDefaultStartPageForPlatform(_platform: NodeJS.Platform) {
+    return "/mod";
 }
 
 function sanitizeDefaultStartPage(page: string | null | undefined, platform: NodeJS.Platform) {
     const fallback = getDefaultStartPageForPlatform(platform);
-    if (!page) {
-        return fallback;
-    }
-
-    if (!supportsWindowsDesktopFeatures(platform) && page === "/mod") {
+    if (!page || page === "/transfer") {
         return fallback;
     }
 

@@ -1,9 +1,7 @@
 import { spawn } from "node:child_process";
 import fsp from "node:fs/promises";
 import path from "node:path";
-import { eden } from "@main/client";
 import isDev from "@main/internal/isDev";
-import { nahidaLogsPath } from "@main/internal/logger";
 import type { AppStatus, PathMetadata } from "@shared/types.gen";
 import {
     BrowserWindow,
@@ -67,9 +65,9 @@ export function openPath(path: string) {
     shell.openPath(path);
 }
 
-export async function trash(path: string) {
-    await shell.trashItem(path);
-    return;
+export async function trash(targetPath: string) {
+    const { default: trashFn } = await import("trash");
+    await trashFn(targetPath);
 }
 
 export async function mkdir(parentPath: string, name: string): Promise<string> {
@@ -163,39 +161,3 @@ export async function processChunked<T>(
     }
 }
 
-export async function openReportWindow() {
-    await desktop.window.report.focus();
-}
-
-export async function submitReport({
-    title,
-    description,
-    submitLog,
-}: {
-    title?: string;
-    description: string;
-    submitLog: boolean;
-}) {
-    let log: File | undefined;
-    if (submitLog) {
-        const logFilePath = path.join(await nahidaLogsPath(), "desktop.log");
-        if (await fse.pathExists(logFilePath)) {
-            const buffer = await fse.readFile(logFilePath);
-            // biome-ignore lint/suspicious/noExplicitAny: _
-            log = new File([buffer as any], "desktop.log");
-        }
-    }
-
-    const { data, error } = await eden.desktop["submit-report"].post({
-        title,
-        description,
-        log,
-    });
-
-    if (error) {
-        const errStr = error.value.toString();
-        throw new Error(errStr);
-    }
-
-    return data;
-}

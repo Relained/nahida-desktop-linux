@@ -6,13 +6,7 @@
         "src/main/**/*",
         "src/preload/**/*",
         "src/shared/**/*",
-        "../backend/**/*",
-        "native/**/*",
-    ],
-    "references": [
-        {
-            "path": "../backend",
-        },
+        "native/**/*"
     ],
     "compilerOptions": {
         "composite": false,
@@ -23,10 +17,7 @@
             "@shared/*": ["./src/shared/*"],
             "@main/*": ["./src/main/*"],
             "@preload/*": ["./src/preload/*"],
-            "@/*": ["./src/*"],
-            "@backend/*": ["../backend/src/*"],
-            "elysia": ["../backend/node_modules/elysia"],
-            "@elysiajs/eden": ["../frontend/node_modules/@elysiajs/eden"],
+            "@/*": ["./src/*"]
         },
         "moduleResolution": "bundler",
         "allowImportingTsExtensions": true,
@@ -35,6 +26,6 @@
         "strict": true,
         "noUnusedLocals": false,
         "noUnusedParameters": false,
-        "declaration": false,
-    },
+        "declaration": false
+    }
 }

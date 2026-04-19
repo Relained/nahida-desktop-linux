@@ -13,22 +13,10 @@ export function ModListRow({
   mod,
   selectedGroupPath,
   handleToggle,
-  fixTools,
-  presets,
 }: {
   mod: ModInfo;
   selectedGroupPath?: string;
   handleToggle: (mod: ModInfo, e?: React.MouseEvent) => void;
-  fixTools: {
-    id: string;
-    name: string;
-    type: string;
-    size: number;
-  }[];
-  presets: {
-    id: string;
-    name: string;
-  }[];
 }) {
   const { queryClient } = useRouteContext({ from: "__root__" });
   const handlePaste = () => pasteModPreview({ modPath: mod.path, selectedGroupPath, queryClient });
@@ -37,8 +25,6 @@ export function ModListRow({
     <ModContextMenu
       mod={mod}
       selectedGroupPath={selectedGroupPath}
-      fixTools={fixTools}
-      presets={presets}
       onPaste={handlePaste}
     >
       <tr

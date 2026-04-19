@@ -1,6 +1,5 @@
 import { getCharactersFolder, getMods } from "@native/native-mod";
 import type { FolderGroup, Preset } from "@shared/types.gen";
-import { GAME_MATCH_CASES } from "@shared/xxmi-match";
 import { and, eq, ne } from "drizzle-orm";
 import type { NahidaDesktop } from "../..";
 import { gamePaths, modPresets, setting } from "../../internal/db/schema";
@@ -93,82 +92,6 @@ export class ModLibraryService {
             return JSON.parse(result.value) as string[];
         } catch {
             return [];
-        }
-    }
-
-    public async previousFocusedGame(): Promise<string | null> {
-        try {
-            const currentPid = process.pid;
-
-            let currentProcessName = this.desktop.lib.native.getProcessName(currentPid);
-            if (currentProcessName) currentProcessName = currentProcessName.toLowerCase();
-
-            const previousPids = this.desktop.lib.native.getPreviousPids(currentPid);
-            if (previousPids.length === 0) return null;
-
-            const games = await this.games();
-
-            for (const pid of previousPids) {
-                const processName = this.desktop.lib.native.getProcessName(pid);
-                if (!processName) continue;
-
-                const lowerProcessName = processName.toLowerCase();
-
-                if (currentProcessName && lowerProcessName.includes(currentProcessName)) continue;
-                if (lowerProcessName.includes("explorer")) continue;
-
-                for (const [_, keywords] of Object.entries(GAME_MATCH_CASES)) {
-                    const isGameProcess = keywords.some((k) => lowerProcessName.includes(k));
-
-                    if (isGameProcess) {
-                        const matchedGame = games.find((g) => {
-                            const lowerGame = g.game.toLowerCase();
-                            return keywords.some((k) => lowerGame.includes(k));
-                        });
-
-                        if (matchedGame) return matchedGame.game;
-                    }
-                }
-            }
-
-            return null;
-        } catch (error) {
-            this.desktop.logger.error(error, "Mod:previousFocusedGame");
-            return null;
-        }
-    }
-
-    public async gamePid(game: string): Promise<number | null> {
-        try {
-            const currentPid = process.pid;
-            const previousPids = this.desktop.lib.native.getPreviousPids(currentPid);
-            if (previousPids.length === 0) return null;
-
-            const lowerGame = game.toLowerCase();
-            let matchingKeywords: string[] | undefined;
-
-            for (const [_, keywords] of Object.entries(GAME_MATCH_CASES)) {
-                if (keywords.some((k) => lowerGame.includes(k))) {
-                    matchingKeywords = keywords;
-                    break;
-                }
-            }
-
-            if (!matchingKeywords) return null;
-
-            for (const pid of previousPids) {
-                const processName = this.desktop.lib.native.getProcessName(pid);
-                if (!processName) continue;
-
-                const lowerProcessName = processName.toLowerCase();
-                if (matchingKeywords.some((k) => lowerProcessName.includes(k))) {
-                    return pid;
-                }
-            }
-            return null;
-        } catch (error) {
-            this.desktop.logger.error(error, `Mod:gamePid:${game}`);
-            return null;
         }
     }
 

@@ -1,66 +1,33 @@
-appId: com.nahida.app
-productName: Nahida Desktop
-afterSign: scripts/after-sign-mac.js
+appId: live.nahida.desktop-linux
+productName: Nahida Desktop Linux
 directories:
-    buildResources: build
+  buildResources: build
 files:
-    - "!**/.*"
-    - "!**/.*/**/*"
-    - "!src/**/*"
-    - "!electron.vite.config.{js,ts,mjs,cjs}"
-    - "!{eslint.config.mjs,dev-app-update.yml,CHANGELOG.md,README.md}"
-    - "!{pnpm-lock.yaml}"
-    - "!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}"
-    - "!node_modules/.pnpm/@cbor-extract+cbor-extract-linux-arm@*/**/*"
-    - "!node_modules/.pnpm/@cbor-extract+cbor-extract-linux-arm64@*/**/*"
-    - "!node_modules/.pnpm/@cbor-extract+cbor-extract-linux-x64@*/**/*"
-    - "!native/**/*"
-    - "!plugins/**/*"
-    - "!local.db"
-# asar: false
+  - "!**/.*"
+  - "!**/.*/**/*"
+  - "!src/**/*"
+  - "!electron.vite.config.{js,ts,mjs,cjs}"
+  - "!{eslint.config.mjs,CHANGELOG.md,README.md}"
+  - "!{pnpm-lock.yaml}"
+  - "!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}"
+  - "!native/**/*"
+  - "!plugins/**/*"
+  - "!packaging/**/*"
+  - "!local.db"
 disableDefaultIgnoredFiles: true
 asarUnpack:
-    - resources/**
-    - "**/*.node"
-    - "node_modules/sharp"
-    - "node_modules/@img"
-win:
-    # cscLink: nahida-desktop.pfx
-    # cscKeyPassword: password
-    executableName: Nahida Desktop
-    extraResources:
-        - from: "native/dll-injector/target/release"
-          filter:
-              - dll-injector.exe
-nsis:
-    artifactName: Nahida Desktop Setup ${version}.${ext}
-    shortcutName: ${productName}
-    uninstallDisplayName: ${productName}
-    createDesktopShortcut: true
-    include: build/installer.nsh
-    deleteAppDataOnUninstall: true
-mac:
-    identity: null
-    entitlementsInherit: build/entitlements.mac.plist
-    extendInfo:
-        - NSCameraUsageDescription: Application requests access to the device's camera.
-        - NSMicrophoneUsageDescription: Application requests access to the device's microphone.
-        - NSDocumentsFolderUsageDescription: Application requests access to the user's Documents folder.
-        - NSDownloadsFolderUsageDescription: Application requests access to the user's Downloads folder.
-    notarize: false
-dmg:
-    artifactName: ${productName}.${ext}
+  - resources/**
+  - "**/*.node"
+  - "node_modules/sharp"
+  - "node_modules/@img"
 linux:
-    target:
-        - AppImage
-        - snap
-        - deb
-    maintainer: electronjs.org
-    category: Utility
+  target:
+    - AppImage
+    - pacman
+  category: Utility
+  maintainer: Relained <sewon7@gmail.com>
 appImage:
-    artifactName: ${productName}.${ext}
+  artifactName: ${name}-${version}.${ext}
+pacman:
+  artifactName: ${name}-${version}.${ext}
 npmRebuild: false
-publish:
-    provider: github
-    owner: myparsleycat
-    repo: nahida-desktop

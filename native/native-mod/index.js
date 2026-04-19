@@ -583,4 +583,3 @@ module.exports = binding
 module.exports.getCharactersFolder = binding.getCharactersFolder
 module.exports.getMods = binding.getMods
 module.exports.processIniFiles = binding.processIniFiles
-module.exports.sendF10 = binding.sendF10

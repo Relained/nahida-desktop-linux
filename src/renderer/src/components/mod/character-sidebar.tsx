@@ -1,4 +1,3 @@
-import { ValidateName } from "@renderer/components/akasha/dialogs";
 import { Button } from "@renderer/components/ui/button";
 import {
   Dialog,
@@ -309,9 +308,8 @@ export const CharacterSidebar = memo(function CharacterSidebar({
         return;
       }
 
-      const validationMessage = ValidateName(trimmedName);
-      if (validationMessage) {
-        toast.warning(validationMessage);
+      if (/[\\/:*?"<>|]/.test(trimmedName)) {
+        toast.warning(t("page.mod.dialog.create-folder.#.invalid-name"));
         return;
       }
 

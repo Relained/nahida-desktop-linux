@@ -1,6 +1,4 @@
-import { DownloadConfirmationOverlay } from "@renderer/components/download-confirmation-overlay";
 import { ContentHeader } from "@renderer/components/mod/content-header";
-import { CustomDownloadDialog } from "@renderer/components/mod/custom-download-dialog";
 import { DeleteGameDialog } from "@renderer/components/mod/delete-game-dialog";
 import { ModGrid } from "@renderer/components/mod/mod-grid";
 import { ModList } from "@renderer/components/mod/mod-list";
@@ -17,18 +15,15 @@ import {
   AlertDialogTitle,
 } from "@renderer/components/ui/alert-dialog";
 import { Label } from "@renderer/components/ui/label";
-import { WindowsOnlyRoute } from "@renderer/components/windows-only-route";
 import { useCharacters, useGames } from "@renderer/hooks/use-mod-data";
 import { useModDragDrop } from "@renderer/hooks/use-mod-drag-drop";
 import {
-  useDownloadCompletionHandler,
   useModRefreshOnFocus,
   useModWatcherEvents,
 } from "@renderer/hooks/use-mod-events";
 import { useModShortcuts } from "@renderer/hooks/use-mod-shortcuts";
 import { useTitlebar } from "@renderer/hooks/use-titlebar";
-import { modStore, useModStore } from "@renderer/store/mod";
-import type { ResolvedArchiveExtractPathMode } from "@shared/mod";
+import { useModStore } from "@renderer/store/mod";
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
@@ -38,14 +33,6 @@ export const Route = createFileRoute("/mod/")({
 });
 
 function RouteComponent() {
-  return (
-    <WindowsOnlyRoute fallbackTo="/transfer">
-      <ModRouteContent />
-    </WindowsOnlyRoute>
-  );
-}
-
-function ModRouteContent() {
   const { t } = useTranslation();
   const { Titlebar } = useTitlebar();
   const { queryClient } = Route.useRouteContext();
@@ -54,11 +41,6 @@ function ModRouteContent() {
   const setSelectedGame = useModStore((s) => s.setSelectedGame);
   const selectedGroup = useModStore((s) => s.selectedGroup);
   const setSelectedGroup = useModStore((s) => s.setSelectedGroup);
-  const isCustomDownloadDialogOpen = useModStore((s) => s.isCustomDownloadDialogOpen);
-  const setIsCustomDownloadDialogOpen = useModStore((s) => s.setIsCustomDownloadDialogOpen);
-  const downloadMode = useModStore((s) => s.downloadMode);
-  const archiveExtractPrompt = useModStore((s) => s.archiveExtractPrompt);
-  const setArchiveExtractPrompt = useModStore((s) => s.setArchiveExtractPrompt);
   const viewMode = useModStore((s) => s.viewMode);
 
   const { data: games = [] } = useGames();
@@ -66,7 +48,6 @@ function ModRouteContent() {
   const selectedGroupData = selectedGroup ?? undefined;
 
   useModRefreshOnFocus(selectedGame, queryClient);
-  useDownloadCompletionHandler(selectedGame, selectedGroupData?.path, queryClient);
   useModWatcherEvents(selectedGame, selectedGroupData?.path, queryClient);
   useModShortcuts();
 
@@ -84,33 +65,11 @@ function ModRouteContent() {
 
   const initExpandedGroups = useModStore((s) => s.initExpandedGroups);
 
-  const resolveDownloadArchiveExtractPrompt = async (
-    requestId: string,
-    mode: ResolvedArchiveExtractPathMode | null,
-  ) => {
-    await window.api.invoke("mod:resolveDownloadArchiveExtractPrompt", requestId, mode);
-  };
-
-  const clearArchiveExtractPromptIfCurrent = (requestId: string) => {
-    if (modStore.getState().archiveExtractPrompt?.requestId === requestId) {
-      setArchiveExtractPrompt(null);
-    }
-  };
-
-  const fileNameForArchiveExtractDialog =
-    archiveExtractPrompt?.fileName ?? archiveExtractDialogFileName;
-
   const isInitialized = useRef(false);
   useEffect(() => {
     const initGame = async () => {
       try {
         initExpandedGroups();
-
-        const focusedGame = await window.api.invoke("mod:getPreviousFocusedGame");
-        if (focusedGame && games.find((g) => g.game === focusedGame)) {
-          setSelectedGame(focusedGame);
-          return;
-        }
 
         if (!selectedGame) {
           const lastGame = await window.api.invoke("mod:getLastGame");
@@ -127,7 +86,7 @@ function ModRouteContent() {
       isInitialized.current = true;
       initGame();
     }
-  }, [games, selectedGame, setSelectedGame]);
+  }, [games, selectedGame, setSelectedGame, initExpandedGroups]);
 
   useEffect(() => {
     if (isInitialized.current) {
@@ -209,8 +168,6 @@ function ModRouteContent() {
               </div>
             </div>
           )}
-
-          {downloadMode && <DownloadConfirmationOverlay />}
         </div>
       </div>
 
@@ -218,41 +175,18 @@ function ModRouteContent() {
 
       <DeleteGameDialog />
 
-      <CustomDownloadDialog
-        open={isCustomDownloadDialogOpen}
-        onOpenChange={setIsCustomDownloadDialogOpen}
-        groupName={selectedGroup?.name}
-        groupPath={selectedGroup?.path}
-      />
-
       <AlertDialog
-        open={fileNameForArchiveExtractDialog !== null}
+        open={archiveExtractDialogFileName !== null}
         onOpenChange={(open) => {
-          if (!open) {
-            if (!archiveExtractPrompt) {
-              closeArchiveExtractDialog();
-            }
-          }
+          if (!open) closeArchiveExtractDialog();
         }}
       >
-        <AlertDialogContent
-          onEscapeKeyDown={(event) => {
-            if (archiveExtractPrompt) {
-              const { requestId } = archiveExtractPrompt;
-              event.preventDefault();
-              void resolveDownloadArchiveExtractPrompt(requestId, null).finally(() => {
-                clearArchiveExtractPromptIfCurrent(requestId);
-              });
-              return;
-            }
-            closeArchiveExtractDialog();
-          }}
-        >
+        <AlertDialogContent onEscapeKeyDown={() => closeArchiveExtractDialog()}>
           <AlertDialogHeader>
             <AlertDialogTitle>{t("page.mod.dialog.extract_archive_path.title")}</AlertDialogTitle>
             <AlertDialogDescription>
               {t("page.mod.dialog.extract_archive_path.description", {
-                fileName: fileNameForArchiveExtractDialog ?? "",
+                fileName: archiveExtractDialogFileName ?? "",
               })}
             </AlertDialogDescription>
             <div className="mt-2 text-left text-sm w-full space-y-2">
@@ -268,54 +202,13 @@ function ModRouteContent() {
             </div>
           </AlertDialogHeader>
           <AlertDialogFooter className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-            <AlertDialogCancel
-              onClick={(event) => {
-                if (archiveExtractPrompt) {
-                  const { requestId } = archiveExtractPrompt;
-                  event.preventDefault();
-                  void resolveDownloadArchiveExtractPrompt(requestId, null).finally(() => {
-                    clearArchiveExtractPromptIfCurrent(requestId);
-                  });
-                  return;
-                }
-                closeArchiveExtractDialog();
-              }}
-            >
+            <AlertDialogCancel onClick={() => closeArchiveExtractDialog()}>
               {t("page.mod.dialog.extract_archive_path.cancel")}
             </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={(event) => {
-                if (archiveExtractPrompt) {
-                  const { requestId } = archiveExtractPrompt;
-                  event.preventDefault();
-                  void resolveDownloadArchiveExtractPrompt(
-                    requestId,
-                    "flatten_single_root",
-                  ).finally(() => {
-                    clearArchiveExtractPromptIfCurrent(requestId);
-                  });
-                  return;
-                }
-                confirmArchiveExtractDialog();
-              }}
-            >
+            <AlertDialogAction onClick={() => confirmArchiveExtractDialog()}>
               {t("page.mod.dialog.extract_archive_path.flatten_single_root")}
             </AlertDialogAction>
-            <AlertDialogAction
-              onClick={(event) => {
-                if (archiveExtractPrompt) {
-                  const { requestId } = archiveExtractPrompt;
-                  event.preventDefault();
-                  void resolveDownloadArchiveExtractPrompt(requestId, "keep_archive_root").finally(
-                    () => {
-                      clearArchiveExtractPromptIfCurrent(requestId);
-                    },
-                  );
-                  return;
-                }
-                keepArchiveRootDialog();
-              }}
-            >
+            <AlertDialogAction onClick={() => keepArchiveRootDialog()}>
               {t("page.mod.dialog.extract_archive_path.keep_archive_root")}
             </AlertDialogAction>
           </AlertDialogFooter>

@@ -4,7 +4,6 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@renderer/components/ui/dropdown-menu";
 import { Input } from "@renderer/components/ui/input";
@@ -28,7 +27,6 @@ import {
   ArrowUpWideNarrow,
   CircleIcon,
   CircleOffIcon,
-  DownloadIcon,
   EllipsisIcon,
   FolderIcon,
   LayoutGridIcon,
@@ -44,7 +42,6 @@ export function ContentHeader() {
   const searchValue = useModStore((s) => s.searchQuery);
   const onSearchChange = useModStore((s) => s.setSearchQuery);
   const selectedGroup = useModStore((s) => s.selectedGroup);
-  const setIsCustomDownloadDialogOpen = useModStore((s) => s.setIsCustomDownloadDialogOpen);
   const queryClient = useQueryClient();
 
   const sortType = useModStore((s) => s.sortType);
@@ -199,17 +196,6 @@ export function ContentHeader() {
               </DropdownMenuItem>
             </DropdownMenuGroup>
 
-            <DropdownMenuSeparator />
-
-            <DropdownMenuItem
-              disabled={!hasSelectedGroup}
-              onClick={() => {
-                setIsCustomDownloadDialogOpen(true);
-              }}
-            >
-              <DownloadIcon />
-              {t("g.download")}
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 

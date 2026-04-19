@@ -102,12 +102,7 @@ function RouteComponent() {
     await update("runInBackground", false, "setting:general:setRunInBackground");
   };
 
-  const startPageOptions = [
-    { value: "/transfer", label: t("page.transfer.title") },
-    { value: "/drive/drive/root", label: t("page.drive.title") },
-    { value: "/drive/share/root", label: t("page.share_drive.title") },
-    ...(hasWindowsDesktopFeatures ? [{ value: "/mod", label: t("page.mod.title") }] : []),
-  ];
+  const startPageOptions = [{ value: "/mod", label: t("page.mod.title") }];
 
   const confirmDisableRunInBackground = async () => {
     setIsRunInBackgroundConfirmOpen(false);
@@ -328,8 +323,6 @@ function RouteComponent() {
                   <SelectGroup>
                     <SelectItem value="ko">한국어</SelectItem>
                     <SelectItem value="en">English</SelectItem>
-                    <SelectItem value="ja">日本語</SelectItem>
-                    <SelectItem value="zh">中文</SelectItem>
                   </SelectGroup>
                 </SelectContent>
               </Select>

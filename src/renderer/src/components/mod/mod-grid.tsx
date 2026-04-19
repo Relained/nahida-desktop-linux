@@ -2,7 +2,6 @@ import { ScrollArea } from "@renderer/components/ui/scroll-area";
 import { Skeleton } from "@renderer/components/ui/skeleton";
 import { useDelayedSkeleton } from "@renderer/hooks/use-delayed-skeleton";
 import { useFilteredMods } from "@renderer/hooks/use-filtered-mods";
-import { useModContextMenuData } from "@renderer/hooks/use-mod-context-menu-data";
 import { useModGroup } from "@renderer/hooks/use-mod-data";
 import { useModMutations } from "@renderer/hooks/use-mod-mutations";
 import { useVirtualizationSettings } from "@renderer/hooks/use-settings";
@@ -32,7 +31,6 @@ export function ModGrid(_props: ModGridProps) {
 
   const { toggleModMutation, exclusiveToggleModMutation, updateToggleKeyMutation } =
     useModMutations();
-  const { fixTools, presets } = useModContextMenuData();
 
   const mods = useFilteredMods(activeGroup?.mods || [], searchQuery);
   const isLoading = isPending || isPlaceholderData;
@@ -187,8 +185,6 @@ export function ModGrid(_props: ModGridProps) {
                   onToggle={handleToggle}
                   isIniListExpanded={iniListExpandedByModId[mod.path] ?? true}
                   onIniListExpandedChange={handleIniListExpandedChange}
-                  fixTools={fixTools}
-                  presets={presets}
                   onToggleKeyUpdate={handleToggleKeyUpdate}
                 />
               ))}
@@ -233,8 +229,6 @@ export function ModGrid(_props: ModGridProps) {
                           onToggle={handleToggle}
                           isIniListExpanded={iniListExpandedByModId[mod.path] ?? true}
                           onIniListExpandedChange={handleIniListExpandedChange}
-                          fixTools={fixTools}
-                          presets={presets}
                           onToggleKeyUpdate={handleToggleKeyUpdate}
                         />
                       ))}

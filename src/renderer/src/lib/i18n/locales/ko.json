@@ -18,150 +18,36 @@
     "download": "다운로드",
     "later": "나중에"
   },
+  "updater": {
+    "titlebar": {
+      "action": "클릭해 재시작하고 업데이트",
+      "downloadAction": "업데이트 다운로드"
+    },
+    "actions": {
+      "download": "업데이트 다운로드",
+      "install": "재시작하고 업데이트"
+    },
+    "status": {
+      "idle": "최신 버전을 사용 중입니다.",
+      "checking": "업데이트를 확인하는 중입니다...",
+      "downloading": "업데이트를 다운로드하는 중입니다...",
+      "available": "새 업데이트가 있습니다. 원할 때 다운로드할 수 있습니다.{{versionRangeText}}",
+      "downloaded": "업데이트를 설치할 준비가 되었습니다."
+    },
+    "toast": {
+      "available": {
+        "title": "새로운 버전이 출시되었습니다.",
+        "description": "Nahida Desktop의 새로운 버전이 출시되었습니다. 다시 시작하여 업데이트하세요.{{versionRangeText}}",
+        "action": "업데이트",
+        "releaseNotes": "패치 노트 열기"
+      },
+      "notAvailable": {
+        "title": "최신 버전을 사용 중입니다.",
+        "description": "현재 사용할 수 있는 업데이트가 없습니다."
+      }
+    }
+  },
   "page": {
-    "transfer": {
-      "title": "전송",
-      "stats_label": {
-        "upload": "업로드",
-        "download": "다운로드",
-        "total_transferred": "전체 전송량",
-        "active_transfers": "진행중인 전송"
-      },
-      "toolbar": {
-        "all": "전체",
-        "upload": "업로드",
-        "download": "다운로드",
-        "status_filter": {
-          "title": "상태 필터",
-          "uploading": "업로드 중",
-          "downloading": "다운로드 중",
-          "paused": "일시정지됨",
-          "completed": "완료됨",
-          "failed": "실패",
-          "queued": "대기열"
-        }
-      },
-      "empty_state": {
-        "all_tabs": "전송 기록이 없습니다",
-        "uploading": "업로드 중인 파일이 없습니다",
-        "downloading": "다운로드 중인 파일이 없습니다",
-        "completed": "완료된 전송이 없습니다",
-        "failed": "실패한 전송이 없습니다",
-        "paused": "일시정지된 전송이 없습니다",
-        "search_results": "검색 결과가 없습니다"
-      },
-      "item": {
-        "uploading": "업로드 중",
-        "downloading": "다운로드 중",
-        "completed": "완료",
-        "failed": "실패",
-        "paused": "일시정지",
-        "queued": "대기 중",
-        "preparing": "준비 중",
-        "time_remaining": "{{time}} 남음",
-        "time_elapsed": "{{time}} 경과",
-        "failed_files": "{{count}}개 실패",
-        "dropdown_menu": {
-          "cancel": "취소",
-          "retry": "다시 시도",
-          "retry_failed_files": "실패한 파일 재시도",
-          "remove_from_transfer": "전송에서 제거"
-        }
-      }
-    },
-    "drive": {
-      "title": "드라이브",
-      "share_drive": "공유 드라이브",
-      "no_contents_section_message": {
-        "0": "이 폴더에 파일이나 폴더가 없습니다",
-        "1": "여기로 파일이나 폴더를 드래그 해 업로드하세요"
-      },
-      "toast": {
-        "no_uploadable_files": "업로드 가능한 파일이 없습니다."
-      },
-      "head_buttons": {
-        "search_in_dir_placeholder": "이 폴더에서 검색...",
-        "dropdown_menu": {
-          "download": "다운로드",
-          "make_new": {
-            "title": "새로 만들기",
-            "new_dir": "폴더 생성",
-            "upload_dir": "폴더 업로드",
-            "upload_file": "파일 업로드"
-          }
-        }
-      },
-      "list_head": {
-        "name": "이름",
-        "date": "수정한 날짜",
-        "size": "크기"
-      },
-      "context_menu": {
-        "open": "열기",
-        "download": "다운로드",
-        "rename": "이름 바꾸기",
-        "trash": "휴지통",
-        "new_dir": "폴더 생성",
-        "delete": "삭제",
-        "cut": "잘라내기",
-        "paste": "붙여넣기"
-      },
-      "dialog": {
-        "common": {
-          "invalid_dir_name": "유효하지 않은 디렉토리 이름입니다.",
-          "invalid_file_name": "유효하지 않은 파일 이름입니다."
-        },
-        "create_dir": {
-          "title": "폴더 생성",
-          "name_input_placeholder": "폴더 이름",
-          "#": {
-            "0": "디렉토리 이름 형식이 유효하지 않습니다",
-            "1": "디렉토리를 생성할 경로의 정보를 가져오는데 실패했어요",
-            "2": "동일한 이름의 폴더가 이미 존재합니다.",
-            "toast-promise": {
-              "loading": "디렉토리를 생성하고 있습니다...",
-              "success": "디렉토리가 생성되었습니다"
-            }
-          }
-        },
-        "rename": {
-          "title": "이름 바꾸기",
-          "name_input_placeholder": "새 이름",
-          "extension": "확장자",
-          "#": {
-            "0": "이름은 비워둘 수 없습니다",
-            "1": "디렉토리 이름 형식이 유효하지 않습니다",
-            "toast-promise": {
-              "loading": "이름을 변경하고 있습니다...",
-              "success": "이름이 변경되었습니다."
-            }
-          }
-        },
-        "conflict_name": {
-          "title": "중복 이름 항목이 있습니다",
-          "description": "중복 {{count}}개를 어떻게 처리할지 선택해 주세요.",
-          "option_suffix": "이름 변경: name (2) 형태로 이름 변경 후 업로드",
-          "option_skip": "건너뛰기: 중복 항목 제외 후 업로드",
-          "preview_label": "중복 항목:",
-          "preview_more": "외 {{count}}개",
-          "action_skip": "건너뛰기",
-          "action_suffix": "이름 변경"
-        },
-        "delete_items": {
-          "title": "항목 삭제",
-          "description": "선택한 항목을 영구 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.",
-          "action": "삭제",
-          "#": {
-            "toast": {
-              "success": "항목이 삭제되었습니다"
-            }
-          }
-        }
-      }
-    },
-    "share_drive": {
-      "title": "공유 드라이브"
-    },
     "mod": {
       "title": "모드 매니저",
       "dad_section": {
@@ -301,15 +187,15 @@
           "toggle-mutation": {
             "0": "이미 {{name}} 폴더가 존재합니다",
             "1": "{{processes}} 가 해당 폴더를 사용 중이기 때문에 변경할 수 없습니다",
-            "1-fallback": "폴더가 잠겨있어 변경할 수 없습니다",
-            "2": "모드 상태 변경에 실패했습니다"
+            "2": "모드 상태 변경에 실패했습니다",
+            "1-fallback": "폴더가 잠겨있어 변경할 수 없습니다"
           },
           "rename-mutation": {
             "0": "이미 {{name}} 폴더가 존재합니다",
             "1": "{{processes}} 가 해당 폴더를 사용 중이기 때문에 이름을 변경할 수 없습니다",
-            "1-fallback": "폴더가 잠겨있어 이름을 변경할 수 없습니다",
             "2": "올바른 모드 이름을 입력해주세요",
-            "3": "모드 이름 변경에 실패했습니다"
+            "3": "모드 이름 변경에 실패했습니다",
+            "1-fallback": "폴더가 잠겨있어 이름을 변경할 수 없습니다"
           },
           "locked-description": "다음 프로세스에서 해당 폴더를 사용 중입니다: {{processes}}",
           "create-preset-mutation": {
@@ -358,89 +244,6 @@
       "log-dialog": {
         "title": "로그",
         "running": "실행 중..."
-      }
-    },
-    "tools": {
-      "d3d11_builder": {
-        "title": "d3d11.dll 빌드",
-        "description": "게임 프로세스에 인젝션될 dll을 빌드합니다",
-        "provider": "제공자",
-        "version": "버전",
-        "version_hint": "빌드에 실패할 경우 버전을 낮춰 재시도해 보세요.",
-        "loading": "불러오는 중...",
-        "load_failed": "버전을 불러오지 못했습니다.",
-        "no_versions": "사용 가능한 버전이 없습니다.",
-        "target_importer": "대상 Importer",
-        "no_importer": "사용 가능한 Importer가 없습니다",
-        "select_importer_msg": "대상 Importer를 선택해주세요.",
-        "building": "빌드 진행중",
-        "start_build": "빌드 시작",
-        "progress": {
-          "XXMI_INIT": "초기화 중...",
-          "XXMI_ERR_GIMI_NOT_FOUND": "Importer를 찾을 수 없습니다.",
-          "XXMI_FIND_VS": "Visual Studio 빌드 도구 찾는 중...",
-          "XXMI_ERR_VS_NOT_FOUND": "Visual Studio 환경(vcvars64.bat)을 찾을 수 없습니다. C++ 빌드 도구가 설치되어 있는지 확인하세요.",
-          "XXMI_BUILDING": "D3D11 DLL 빌드 중...",
-          "XXMI_ERR_DLL_NOT_FOUND": "빌드된 d3d11.dll 파일을 찾을 수 없습니다.",
-          "XXMI_ERR_DLL_NOT_WRITABLE": "대상 Importer에 d3d11.dll을 쓸 수 없습니다. 폴더 권한을 확인하세요.",
-          "XXMI_ERR_DLL_IN_USE": "d3d11.dll을 교체할 수 없습니다. 게임을 먼저 종료한 뒤 다시 시도하세요.",
-          "XXMI_BUILD_SUCCESS": "d3d11.dll이 성공적으로 적용되었습니다.",
-          "XXMI_ERR_BUILD_FAILED": "빌드 중 예기치 않은 오류가 발생했습니다.",
-          "XXMI_DOWNLOAD_REPO": "XXMI 소스 코드 다운로드 중...",
-          "XXMI_EXTRACT_REPO": "소스 코드 압축 해제 중...",
-          "XXMI_ENABLE_UNSAFE_MODE": "Unsafe Mode 활성화 중..."
-        }
-      },
-      "toggle_viewer_generator": {
-        "title": "Toggle Viewer 생성기",
-        "not_configured": "XXMI 경로가 설정되지 않았습니다. XXMI를 먼저 설정하세요.",
-        "auto_generate": "Toggle Viewer 자동 생성",
-        "auto_generate_desc": "모드 ini 토글 섹션에서 toggle-viewer 파일을 자동으로 생성합니다.",
-        "hotkey": "Toggle Viewer 단축키",
-        "batch_generate": "일괄 생성",
-        "batch_delete": "일괄 삭제",
-        "stop": "중지",
-        "running": "실행 중: {{mode}}",
-        "idle": "대기 중",
-        "unknown": "알 수 없음",
-        "logs": "로그",
-        "no_logs": "아직 로그가 없습니다.",
-        "dialog": {
-          "trigger": "단축키:",
-          "title": "Toggle Viewer 단축키",
-          "description": "설정할 단축키 조합을 누르세요"
-        }
-      },
-      "fix-tool-manager": {
-        "presets": {},
-        "builder": {
-          "left": {
-            "title": "추가된 스크립트",
-            "description": "드래그 드랍해 스크립트를 추가하거나 + 버튼을 눌러 우측으로 이동할 수 있습니다",
-            "noScripts": {
-              "title": "사용할 수 있는 스크립트가 없습니다",
-              "description": "python 파일(.py) 또는 실행 파일(.exe)을 여기로 드래그 드랍해 추가할 수 있습니다"
-            },
-            "dropToAdd": "드롭하여 추가"
-          },
-          "right": {
-            "title": "프리셋 구성",
-            "description": "드래그해 스크립트 순서를 변경할 수 있습니다",
-            "presetName": "프리셋 이름",
-            "enterPresetName": "프리셋 이름을 입력해 주세요",
-            "noScripts": {
-              "title": "추가된 스크립트가 없습니다",
-              "description": "왼쪽 목록에서 + 버튼을 눌러 스크립트를 추가할 수 있습니다"
-            },
-            "#": {
-              "handleSavePreset": {
-                "success": "프리셋이 저장되었습니다",
-                "error": "프리셋 저장에 실패했습니다",
-                "alreadyExists": "이미 존재하는 프리셋 이름입니다"
-              }
-            }
-          }
-        }
       }
     },
     "setting": {
@@ -550,131 +353,10 @@
           }
         }
       },
-      "xxmi": {
-        "xxmiPath": "XXMI 경로",
-        "autoScan": "자동 탐색",
-        "activeImporter": "활성화된 Importer",
-        "persistToggles": "토글 영구 저장",
-        "persistTogglesDescription": "리로드할 때 모드 ini를 수정해 토글 상태를 영구 저장합니다",
-        "persistNotFoundXXMI": "XXMI Launcher 경로를 먼저 설정해 주세요.",
-        "fn": {
-          "findXXMIPath": {
-            "xxmiNotFound": "XXMI 를 찾을 수 없습니다",
-            "alert": {
-              "title": "주의",
-              "description": "자동 탐색된 XXMI 런처 경로를 확인하세요. 정상적이지 않다면 직접 경로를 입력해주세요."
-            }
-          },
-          "saveXXMIPath": {
-            "success": "XXMI 경로가 저장되었습니다",
-            "configNotFound": "해당 경로에서 XXMI Launcher Config.json 파일을 찾을 수 없습니다"
-          }
-        }
-      },
-      "acc": {
-        "title": "계정",
-        "not_logged_in": {
-          "description": "로그인이 필요합니다.",
-          "login": "로그인"
-        },
-        "my_account": "내 계정",
-        "logout": "로그아웃"
-      },
       "adv": {
         "title": "고급",
         "warning_title": "주의",
         "warning_description": "이 곳의 설정을 변경하면 앱 동작에 영향을 줄 수 있습니다."
-      },
-      "transfer": {
-        "title": "전송",
-        "concurrency": {
-          "title": "동시 전송"
-        },
-        "other": {
-          "title": "기타"
-        },
-        "downloadConcurrency": {
-          "title": "다운로드 동시 전송 수",
-          "description": "드라이브 전송에서 동시에 다운로드할 파일 수를 설정합니다. 범위: 16~64"
-        },
-        "uploadConcurrency": {
-          "title": "업로드 동시 전송 수",
-          "description": "드라이브 전송에서 동시에 업로드할 파일 수를 설정합니다. 범위: 4~16"
-        },
-        "uploadCreateManyConcurrency": {
-          "title": "업로드 메타데이터 동시 요청 수",
-          "description": "파일 업로드를 시작하기 전에 동시에 실행할 요청 수를 설정합니다. 범위: 1~4"
-        }
-      }
-    },
-    "report": {
-      "title": "문제 신고",
-      "reported_title": "문제가 신고되었습니다",
-      "report_id": "report id: {{id}}",
-      "description_label": "경험한 문제를 가능한 자세히 설명해주세요.",
-      "fields": {
-        "title": "제목",
-        "title_placeholder": "선택적",
-        "description": "문제 설명",
-        "attach_log": "디버그에 도움을 줄 수 있는 로그 파일 첨부"
-      },
-      "submit": "제출"
-    }
-  },
-  "components": {
-    "path-selector-dialog": {
-      "title": "경로 선택",
-      "description": "{{name}} 를 어떤 방식으로 다운로드 할지 선택하세요",
-      "mod_manager": {
-        "title": "모드 매니저",
-        "description": {
-          "0": "모드 매니저에서",
-          "1": "캐릭터 폴더를 선택합니다"
-        }
-      },
-      "explorer": {
-        "title": "경로 선택",
-        "description": {
-          "0": "파일 탐색기에서",
-          "1": "폴더를 선택합니다"
-        }
-      }
-    },
-    "download-confirmation-overlay": {
-      "title": "다운로드 확인",
-      "description": "다운로드할 위치를 선택하세요",
-      "file_name": "파일 이름",
-      "file_name_placeholder": "파일 이름을 입력하세요",
-      "download_location": "다운로드 위치",
-      "need_select_character_folder": "좌측에서 캐릭터 폴더를 선택하세요"
-    }
-  },
-  "updater": {
-    "titlebar": {
-      "action": "클릭해 재시작하고 업데이트",
-      "downloadAction": "업데이트 다운로드"
-    },
-    "actions": {
-      "download": "업데이트 다운로드",
-      "install": "재시작하고 업데이트"
-    },
-    "status": {
-      "idle": "최신 버전을 사용 중입니다.",
-      "checking": "업데이트를 확인하는 중입니다...",
-      "downloading": "업데이트를 다운로드하는 중입니다...",
-      "available": "새 업데이트가 있습니다. 원할 때 다운로드할 수 있습니다.{{versionRangeText}}",
-      "downloaded": "업데이트를 설치할 준비가 되었습니다."
-    },
-    "toast": {
-      "available": {
-        "title": "새로운 버전이 출시되었습니다.",
-        "description": "Nahida Desktop의 새로운 버전이 출시되었습니다. 다시 시작하여 업데이트하세요.{{versionRangeText}}",
-        "action": "업데이트",
-        "releaseNotes": "패치 노트 열기"
-      },
-      "notAvailable": {
-        "title": "최신 버전을 사용 중입니다.",
-        "description": "현재 사용할 수 있는 업데이트가 없습니다."
       }
     }
   }

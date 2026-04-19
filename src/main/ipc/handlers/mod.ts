@@ -5,10 +5,16 @@ import { dialog } from "electron";
 
 export function registerModHandlers(desktop: NahidaDesktop) {
     rh("mod:selectFolder", async (game: string) => {
-        const result = await dialog.showOpenDialog({
-            properties: ["openDirectory"],
-            title: `Select ${game} Mod Folder`,
-        });
+        const parent = desktop.window.main.window ?? undefined;
+        const result = await (parent
+            ? dialog.showOpenDialog(parent, {
+                  properties: ["openDirectory"],
+                  title: `Select ${game} Mod Folder`,
+              })
+            : dialog.showOpenDialog({
+                  properties: ["openDirectory"],
+                  title: `Select ${game} Mod Folder`,
+              }));
 
         if (result.canceled || result.filePaths.length === 0) {
             return null;
@@ -27,8 +33,8 @@ export function registerModHandlers(desktop: NahidaDesktop) {
         return await desktop.service.mod.get.games();
     });
 
-    rh("mod:addGame", async (game: string, path: string) => {
-        return await desktop.service.mod.fn.addGame(game, path);
+    rh("mod:addGame", async (game: string, p: string) => {
+        return await desktop.service.mod.fn.addGame(game, p);
     });
 
     rh("mod:removeGame", async (game: string) => {
@@ -39,24 +45,18 @@ export function registerModHandlers(desktop: NahidaDesktop) {
         "mod:updateGame",
         async (
             game: string,
-            updates: {
-                modFolderPath: string;
-                importer: string | null;
-            },
+            updates: { modFolderPath: string; importer: string | null },
         ) => {
             return await desktop.service.mod.fn.updateGame(game, updates);
         },
     );
 
     rh("mod:pickFolder", async () => {
-        const result = await dialog.showOpenDialog({
-            properties: ["openDirectory"],
-        });
-
-        if (result.canceled || result.filePaths.length === 0) {
-            return null;
-        }
-
+        const parent = desktop.window.main.window ?? undefined;
+        const result = await (parent
+            ? dialog.showOpenDialog(parent, { properties: ["openDirectory"] })
+            : dialog.showOpenDialog({ properties: ["openDirectory"] }));
+        if (result.canceled || result.filePaths.length === 0) return null;
         return result.filePaths[0];
     });
 
@@ -92,17 +92,6 @@ export function registerModHandlers(desktop: NahidaDesktop) {
         return await desktop.service.mod.fn.disableAll(groupPath);
     });
 
-    rh("mod:downloadFromUrl", async (url: string, groupPath: string) => {
-        return await desktop.lib.customDownloader.downloadToGroup(url, groupPath);
-    });
-
-    rh(
-        "mod:resolveDownloadArchiveExtractPrompt",
-        async (requestId: string, mode) => {
-            desktop.lib.customDownloader.resolveArchiveExtractPrompt(requestId, mode);
-        },
-    );
-
     rh(
         "mod:updateToggleKey",
         async (
@@ -113,9 +102,7 @@ export function registerModHandlers(desktop: NahidaDesktop) {
             value: string,
         ) => {
             let iniPath = iniFileName;
-            if (!path.isAbsolute(iniFileName)) {
-                iniPath = path.join(modPath, iniFileName);
-            }
+            if (!path.isAbsolute(iniFileName)) iniPath = path.join(modPath, iniFileName);
             return await desktop.service.mod.fn.updateToggleKey(
                 iniPath,
                 sectionName,
@@ -159,10 +146,6 @@ export function registerModHandlers(desktop: NahidaDesktop) {
 
     rh("mod:getLastGame", async () => {
         return await desktop.service.mod.get.lastGame();
-    });
-
-    rh("mod:getPreviousFocusedGame", async () => {
-        return await desktop.service.mod.get.previousFocusedGame();
     });
 
     rh("mod:setLastGame", async (game: string) => {
